@@ -13,15 +13,17 @@ class Parking:
 			self.random_spawn = True
 			self.cars_num = random.randint(0, 63)
 		elif spawn_cars not in range(64):
-			raise ValueError('There are only 64 parking places in the parking lot!')
+			raise ValueError('There are only 63+1 parking places in the parking lot!')
 		else:
 			self.random_spawn = False	
 			self.cars_num = spawn_cars
 
+		self.background = pygame.image.load('sprites/parking.png')
 		self.grass_color = 63, 155, 11, 255
-		self.road_color = 80, 80, 80, 255
 		self.markup_color = 255, 255, 255, 255
-		self.arrows_color = 242, 188, 10, 255
+		self.road_color = 80, 80, 80, 255
+		self.pointers_color = 242, 188, 10, 255
+		self.road_pointers_color = 161, 134, 45, 255
 		self.spaces = {}
 		self.cars_sprites = []
 		self.parked_idxs = []
@@ -50,8 +52,13 @@ class Parking:
 		self.randomize()
 
 	def get_center(self, place, car):
-		'''Calculates the center of a parking space relative to the car sprite'''
+		'''Returns the center of a parking space relative to the car sprite'''
 		return place[0] + place[2] / 2 - car.get_size()[0] / 2, place[1] + place[3] / 2 - car.get_size()[1] / 2
+
+	def get_target_position(self):
+		'''Returns the center of a target space'''
+		x, y, w, h = self.spaces[self.target_idx]
+		return x + w / 2, y + h / 2
 
 	def randomize(self):
 		'''Shuffles occupied parking spaces and target space'''
@@ -65,7 +72,7 @@ class Parking:
 
 	def draw(self, screen):
 		'''Renders parked cars and target space'''
-		pygame.draw.rect(screen, self.arrows_color, self.spaces[self.target_idx], 5)
+		pygame.draw.rect(screen, self.pointers_color, self.spaces[self.target_idx], 5)
 		for i in self.parked_idxs:
 			car = self.cars_sprites[i-1]
 			pos = self.spaces[i]
