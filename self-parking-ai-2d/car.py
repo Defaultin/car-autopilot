@@ -68,18 +68,24 @@ class Car:
                     self.movement_score -= 100
                     break
                 elif color == parking.markup_color:
-                    self.movement_score -= 1
+                    self.movement_score -= 10
                     break
                 else:
-                    self.movement_score += abs(self.velocity.x) * 0.1
-                    self.time_score -= 0.1
-                    if self.start_distance:
-                        target_x, target_y = parking.get_target_position()
-                        target_distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
-                        self.distance_score = -100 * target_distance / self.start_distance + 100
+                    self.time_score -= 0.01
+                    self.movement_score += abs(self.velocity.x) * 0.01
+                    self.distance_score = self._compute_distance_score(parking)
             except IndexError:
                 self.is_alive = False
                 self.movement_score -= 100
+
+    def _compute_distance_score(self, parking):
+        """Calculates distance score depending on the proximity to the target"""
+        target_x, target_y = parking.get_target_position()
+        distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
+        if not self.start_distance:
+            self.start_distance = distance
+        distance_score = -100 * distance / self.start_distance + 100
+        return distance_score if distance_score <= 99 else 1000
 
     def _compute_radars(self, screen, parking):
         """Calculates radars and distances from car to parking facilities"""
