@@ -44,6 +44,7 @@ class Simulation:
                         self.start = True
                     elif event.key == pg.K_g:  # shuffle parked cars
                         self.parking.randomize()
+                        self.car = Car(spawn_position=(60, 70), spawn_angle=-90)
                     elif event.key == pg.K_h:  # reset car position
                         self.car = Car(spawn_position=(60, 70), spawn_angle=-90)
                     elif event.key == pg.K_j:  # show collision points
