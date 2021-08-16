@@ -18,7 +18,7 @@ class Simulation:
 
     def draw_info(self):
         label_color = 75, 0, 130
-        font = pg.font.SysFont('Roboto', 40)
+        font = pg.font.SysFont('Comic Sans MS', 40)
 
         text = f'T/M/D: {round(self.car.time_score)}/{round(self.car.movement_score)}/{round(self.car.distance_score)}'
         label = font.render(text, True, label_color)

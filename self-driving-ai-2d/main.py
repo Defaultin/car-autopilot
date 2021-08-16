@@ -16,6 +16,16 @@ class Simulation:
         self.highway = Highway((1320 // 2, 768 // 2), 300, complexity=5, width=50)
         self.car = Car(spawn_position=self.highway.start_position, spawn_angle=self.highway.start_angle)
 
+    def draw_info(self):
+        label_color = 75, 0, 130
+        font = pg.font.SysFont('Comic Sans MS', 40)
+
+        text = f'Score: {round(self.car.score)}'
+        label = font.render(text, True, label_color)
+        label_rect = label.get_rect()
+        label_rect.center = (120, self.height - 50)
+        self.screen.blit(label, label_rect)
+
     def run(self):
         while True:
 
@@ -61,6 +71,7 @@ class Simulation:
 
             # rendering
             self.highway.draw(self.screen)
+            self.draw_info()
             self.car.move(car_movement, self.clock.get_time() * 0.01, self.screen, self.highway)
             self.car.draw(self.screen)
 
