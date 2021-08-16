@@ -1,6 +1,6 @@
 import pygame as pg
 import numpy as np
-from math import sin, cos, pi
+from math import pi, sin, cos, sqrt, acos, degrees
 from scipy.interpolate import splprep, splev
 
 __all__ = 'Highway'
@@ -19,21 +19,23 @@ class Highway:
         self.spread = spread
         self.complexity = complexity
         self.width = width
-        self.start_position = 0, 0
-        self.start_angle = 0
         self.highway_curve = None
         self.highway_markup = None
+        self.start_position = 0, 0
+        self.start_angle = 0
         self.generate()
 
     def generate(self, points_num=1000):
         """Generates a random curve using random circle polarization and B-spline"""
-        rho = np.random.uniform(self.width, self.spread, size=2 * self.complexity)
+        rho = np.random.uniform(self.spread - 2 * self.width, self.spread, size=2 * self.complexity)
         phi = np.arange(0, 2 * pi, pi / self.complexity)
         points = np.array([(self.x + r * cos(p), self.y + r * sin(p)) for r, p in zip(rho, phi)])
         tck, u = splprep(points.T, s=0, per=1)
-        self.start_position = points[0]
         self.highway_curve = np.c_[splev(np.linspace(u.min(), u.max(), points_num), tck, der=0)].T
         self.highway_markup = np.split(self.highway_curve, 5 * points_num // self.width)[::2]
+        (x1, y1), (x2, y2) = self.highway_curve[10], self.highway_curve[10 + self.width]
+        self.start_position = x1, y1
+        self.start_angle = 180 - degrees(acos((x2 - x1) / sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)))
 
     def draw(self, screen):
         """Renders highway curve and its markup"""

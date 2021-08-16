@@ -13,8 +13,8 @@ class Simulation:
         self.width, self.height = self.window
         self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
         self.clock = pg.time.Clock()
-        self.highway = Highway((1320 // 2, 768 // 2), 300, complexity=4, width=50)
-        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=90)
+        self.highway = Highway((1320 // 2, 768 // 2), 300, complexity=5, width=50)
+        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=self.highway.start_angle)
 
     def run(self):
         while True:
@@ -28,9 +28,9 @@ class Simulation:
                         self.start = True
                     elif event.key == pg.K_g:  # generate new highway
                         self.highway.generate()
-                        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=90)
+                        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=self.highway.start_angle)
                     elif event.key == pg.K_h:  # reset car position
-                        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=90)
+                        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=self.highway.start_angle)
                     elif event.key == pg.K_j:  # show collision points
                         self.car.show_collision_points = False if self.car.show_collision_points else True
                     elif event.key == pg.K_k:  # show collision radars

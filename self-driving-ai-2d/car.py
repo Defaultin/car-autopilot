@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+from random import randint
 from pygame.math import Vector2
 from math import sqrt, sin, cos, radians, degrees, copysign
 
@@ -10,7 +11,7 @@ class Car:
     """Kinematic model of a car with radars for calculating distances to objects"""
 
     def __init__(self, *, spawn_position=(0.0, 0.0), spawn_angle=0):
-        self.car_sprite = pg.image.load('sprites/car0.png')
+        self.car_sprite = pg.image.load(f'sprites/car{randint(0, 63)}.png')
         rect = self.car_sprite.get_rect()
         self.car_sprite_width = 0.5 * rect.width - 5
         self.car_sprite_height = 0.5 * rect.height - 10
