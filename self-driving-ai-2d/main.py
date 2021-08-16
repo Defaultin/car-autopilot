@@ -1,36 +1,20 @@
-import sys
 import pygame as pg
+import sys
+from highway import Highway
 from car import Car
-from parking import Parking
 
 
 class Simulation:
-    def __init__(self, *, parked_cars=None):
+    def __init__(self):
         pg.init()
-        pg.display.set_caption('Self-parking simulation')
+        pg.display.set_caption('Self-driving simulation')
         self.start = False
         self.window = 1320, 768
         self.width, self.height = self.window
         self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
         self.clock = pg.time.Clock()
-        self.parking = Parking(spawn_cars=parked_cars)
-        self.car = Car(spawn_position=(100, 70), spawn_angle=-90)
-
-    def draw_info(self):
-        label_color = 75, 0, 130
-        font = pg.font.SysFont('Roboto', 40)
-
-        text = f'T/M/D: {round(self.car.time_score)}/{round(self.car.movement_score)}/{round(self.car.distance_score)}'
-        label = font.render(text, True, label_color)
-        label_rect = label.get_rect()
-        label_rect.center = (120, self.height - 80)
-        self.screen.blit(label, label_rect)
-
-        text = f'Score: {round(self.car.time_score + self.car.movement_score + self.car.distance_score)}'
-        label = font.render(text, True, label_color)
-        label_rect = label.get_rect()
-        label_rect.center = (120, self.height - 50)
-        self.screen.blit(label, label_rect)
+        self.highway = Highway((1320 // 2, 768 // 2), 300, complexity=4, width=50)
+        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=90)
 
     def run(self):
         while True:
@@ -42,11 +26,11 @@ class Simulation:
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_SPACE:  # start simulation
                         self.start = True
-                    elif event.key == pg.K_g:  # shuffle parked cars
-                        self.parking.randomize()
-                        self.car = Car(spawn_position=(60, 70), spawn_angle=-90)
+                    elif event.key == pg.K_g:  # generate new highway
+                        self.highway.generate()
+                        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=90)
                     elif event.key == pg.K_h:  # reset car position
-                        self.car = Car(spawn_position=(60, 70), spawn_angle=-90)
+                        self.car = Car(spawn_position=self.highway.start_position, spawn_angle=90)
                     elif event.key == pg.K_j:  # show collision points
                         self.car.show_collision_points = False if self.car.show_collision_points else True
                     elif event.key == pg.K_k:  # show collision radars
@@ -76,10 +60,8 @@ class Simulation:
                 car_movement["rotation"] = "neutral"
 
             # rendering
-            self.screen.blit(self.parking.background, (0, 0))
-            self.parking.draw(self.screen)
-            self.draw_info()
-            self.car.move(car_movement, self.clock.get_time() * 0.01, self.screen, self.parking)
+            self.highway.draw(self.screen)
+            self.car.move(car_movement, self.clock.get_time() * 0.01, self.screen, self.highway)
             self.car.draw(self.screen)
 
             pg.display.flip()

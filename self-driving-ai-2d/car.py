@@ -30,10 +30,7 @@ class Car:
         self.max_steering = 1.0
 
         self.is_alive = True
-        self.start_distance = 0
-        self.distance_score = 0
-        self.movement_score = 0
-        self.time_score = pg.time.Clock().get_time()
+        self.score = 0
 
         self.show_collision_points = False
         self.show_radars = False
@@ -64,31 +61,17 @@ class Car:
             try:
                 color = screen.get_at(point)
                 if color == surface.grass_color:
-                    self.movement_score -= 100
+                    self.score -= 100
                     self.is_alive = False
                     break
                 elif color == surface.markup_color:
-                    self.movement_score -= 10
+                    self.score -= 10
                     break
                 else:
-                    self.time_score -= 0.01
-                    self.movement_score += abs(self.velocity.x) * 0.001
-                    if self.distance_score > 99:
-                        self.distance_score = 1000
-                        self.is_alive = False
-                    else:
-                        self.distance_score = self._compute_distance_score(surface)
+                    self.score += abs(self.velocity.x) * 0.001
             except IndexError:
-                self.movement_score -= 100
+                self.score -= 100
                 self.is_alive = False
-
-    def _compute_distance_score(self, surface):
-        """Calculates distance score depending on the proximity to the target"""
-        target_x, target_y = surface.get_target_position()
-        distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
-        if not self.start_distance:
-            self.start_distance = distance
-        return -100 * distance / self.start_distance + 100
 
     def _compute_radars(self, screen, surface):
         """Calculates radars and distances from car to surface facilities"""
