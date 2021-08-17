@@ -12,10 +12,10 @@ class Simulation:
         pg.display.set_caption('Self-driving simulation')
         self.window = 1320, 768
         self.width, self.height = self.window
-        self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
+        self.screen = pg.display.set_mode(self.window)
         self.clock = pg.time.Clock()
 
-        self.highway = Highway((1320 // 2, 768 // 2), (250, 350), complexity=5, width=30)
+        self.highway = Highway((1320 // 2, 768 // 2), (150, 350), complexity=5, width=30)
         self.best_score = -float("inf")
         self.generations = epochs
         self.generation = 0
@@ -68,7 +68,7 @@ class Simulation:
                         self.highway.generate()
                         self.map += 1
                         self.time = 0
-                        break
+                        return
                     elif event.key == pg.K_j:  # show collision points
                         for car in self.cars:
                             car.show_collision_points = False if car.show_collision_points else True
@@ -85,17 +85,10 @@ class Simulation:
             for net, car, gen in zip(self.nets, self.cars, genomes):
                 # get movement params from network
                 output = net.activate(car.radars_data)
-                choice = output.index(max(output))
 
                 # movement params mapping
-                movement_params = dict()
-                movement_params["direction"] = "forward"
-                if choice == 0:
-                    movement_params["rotation"] = "right"
-                elif choice == 1:
-                    movement_params["rotation"] = "neutral"
-                elif choice == 2:
-                    movement_params["rotation"] = "left"
+                direction, rotation = divmod(output.index(max(output)), 3)
+                movement_params = {"direction": "forward", "rotation": rotation - 1}
 
                 # move a car
                 car.move(movement_params, self.clock.get_time() * 0.01, self.screen, self.highway)
@@ -137,7 +130,7 @@ class Simulation:
         population = neat.Population(config)
         population.add_reporter(neat.StdOutReporter(True))
         population.add_reporter(neat.StatisticsReporter())
-        population.add_reporter(neat.Checkpointer(10))
+        population.add_reporter(neat.Checkpointer(10, filename_prefix="checkpoints/self-driving-checkpoint-"))
         population.run(self.run_generation, self.generations)
 
 

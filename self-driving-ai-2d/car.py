@@ -73,7 +73,7 @@ class Car:
                     self.score -= 10
                     break
                 else:
-                    self.score += abs(self.velocity.x) * 0.001 / self.scale
+                    self.score += self.velocity.x * 0.001 / self.scale
             except IndexError:
                 self.score -= 100
                 self.is_alive = False
@@ -122,28 +122,28 @@ class Car:
     def _update(self, movement, dt):
         """Updates motion parameters according to the kinematics laws and the input direction of the car"""
         # update acceleration
-        if movement["direction"] == "forward":
+        if movement["direction"] in {1, "forward"}:
             if self.velocity.x < 0:
                 self.acceleration = self.brake_deceleration
             else:
                 self.acceleration += dt
-        elif movement["direction"] == "backward":
+        elif movement["direction"] in {-1, "backward"}:
             if self.velocity.x > 0:
                 self.acceleration = -self.brake_deceleration
             else:
                 self.acceleration -= dt
-        elif movement["direction"] == "neutral":
+        elif movement["direction"] in {0, "neutral"}:
             if abs(self.velocity.x) > dt * self.free_deceleration:
                 self.acceleration = -copysign(self.free_deceleration, self.velocity.x)
             elif dt:
                 self.acceleration = -self.velocity.x / dt
 
         # update steering
-        if movement["rotation"] == "right":
+        if movement["rotation"] in {1, "right"}:
             self.steering -= self.max_steering * dt
-        elif movement["rotation"] == "left":
+        elif movement["rotation"] in {-1, "left"}:
             self.steering += self.max_steering * dt
-        elif movement["rotation"] == "neutral":
+        elif movement["rotation"] in {0, "neutral"}:
             self.steering = 0
 
         # update velocity
