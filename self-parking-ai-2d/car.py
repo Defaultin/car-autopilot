@@ -42,14 +42,13 @@ class Car:
         """Calculates collision points along the sides of the car"""
         sin_alpha = sin(radians(-self.angle))
         cos_alpha = cos(radians(-self.angle))
-        old_points = np.array([
-            (self.position.x + self.car_sprite_width, self.position.y + self.car_sprite_height),
-            (self.position.x + self.car_sprite_width, self.position.y - self.car_sprite_height),
-            (self.position.x - self.car_sprite_width, self.position.y + self.car_sprite_height),
-            (self.position.x - self.car_sprite_width, self.position.y - self.car_sprite_height)
-        ])
 
+        left, right = self.position.x - self.car_sprite_width, self.position.x + self.car_sprite_width
+        bottom, top = self.position.y - self.car_sprite_height, self.position.y + self.car_sprite_height
+
+        old_points = np.array([(right, top), (right, bottom), (left, top), (left, bottom)])
         new_points = np.empty((0, 2), np.int_)
+
         for x, y in old_points:
             old_x, old_y = x - self.position.x, y - self.position.y
             new_x = self.position.x + old_x * cos_alpha - old_y * sin_alpha
@@ -92,13 +91,12 @@ class Car:
 
     def _compute_radars(self, screen, surface):
         """Calculates radars and distances from car to surface facilities"""
-        x, y = 0, 0
         car_angles = np.array([radians(360 - self.angle - 45 * angle) for angle in range(9)])
         self.radars = np.empty((0, 2), np.int_)
         self.radars_data = np.empty(0, np.int_)
 
         for angle in car_angles:
-            length = 0
+            length, x, y = 0, 0, 0
             while length <= 300:
                 length += 1
                 x = int(self.position.x + length * cos(angle))
@@ -134,6 +132,7 @@ class Car:
 
     def _update(self, movement, dt):
         """Updates motion parameters according to the kinematics laws and the input direction of the car"""
+        # update acceleration
         if movement["direction"] == "forward":
             if self.velocity.x < 0:
                 self.acceleration = self.brake_deceleration
@@ -150,6 +149,7 @@ class Car:
             elif dt:
                 self.acceleration = -self.velocity.x / dt
 
+        # update steering
         if movement["rotation"] == "right":
             self.steering -= self.max_steering * dt
         elif movement["rotation"] == "left":
@@ -157,9 +157,11 @@ class Car:
         elif movement["rotation"] == "neutral":
             self.steering = 0
 
+        # update velocity
         self.velocity.x += self.acceleration * dt
         self._check_params()
 
+        # update position and angle
         if self.steering:
             turning_radius = self.chassis_length / sin(radians(self.steering))
             angular_velocity = self.velocity.x / turning_radius

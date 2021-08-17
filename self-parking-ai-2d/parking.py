@@ -20,6 +20,7 @@ class Parking:
 		self.road_color = 80, 80, 80, 255
 		self.pointers_color = 242, 188, 10, 255
 		self.road_pointers_color = 161, 134, 45, 255
+
 		self.spaces = {}
 		self.cars_sprites = []
 		self.parked_idxs = []
