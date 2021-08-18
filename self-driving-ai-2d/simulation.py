@@ -56,6 +56,7 @@ class Simulation:
     def _init_new_generation(self, genomes, config):
         """Initializes new generation of networks and cars according to genomes"""
         self.nets, self.cars = [], []
+        self.best_score = 0
         self.generation += 1
 
         for _, gen in genomes:
@@ -86,6 +87,9 @@ class Simulation:
                     elif event.key == pg.K_k:       # show collision radars
                         for car in self.cars:
                             car.show_radars = False if car.show_radars else True
+                    elif event.key == pg.K_l:       # show score
+                        for car in self.cars:
+                            car.show_score = False if car.show_score else True
                     elif event.key == pg.K_ESCAPE:  # exit simulation
                         sys.exit(0)
 
@@ -164,6 +168,8 @@ class Simulation:
                         car.show_collision_points = False if car.show_collision_points else True
                     elif event.key == pg.K_k:       # show collision radars
                         car.show_radars = False if car.show_radars else True
+                    elif event.key == pg.K_l:       # show score
+                        car.show_score = False if car.show_score else True
                     elif event.key == pg.K_ESCAPE:  # exit simulation
                         sys.exit(0)
 

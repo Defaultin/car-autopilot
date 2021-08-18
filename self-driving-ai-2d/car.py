@@ -10,7 +10,8 @@ __all__ = "Car"
 class Car:
     """Kinematic model of a car with radars for calculating distances to objects"""
 
-    def __init__(self, spawn_position=(0.0, 0.0), spawn_angle=0, scale=1, show_collision=False, show_radars=False):
+    def __init__(self, spawn_position=(0.0, 0.0), spawn_angle=0, scale=1,
+                 show_collision=False, show_radars=False, show_score=False):
         sprite = pg.image.load(f"sprites/car{randint(0, 63)}.png")
         rect = sprite.get_rect()
         w, h = round(rect.width * scale), round(rect.height * scale)
@@ -40,6 +41,7 @@ class Car:
 
         self.show_collision_points = show_collision
         self.show_radars = show_radars
+        self.show_score = show_score
 
     def _stop(self):
         """Stops a car model"""
@@ -77,7 +79,7 @@ class Car:
                     self._stop()
                     break
                 elif color == surface.markup_color:
-                    self.score -= 1
+                    self.score -= 5
                     break
                 else:
                     self.score += self.velocity.x * 0.001 / self.scale
@@ -194,3 +196,10 @@ class Car:
         rotated = pg.transform.rotate(self.car_sprite, self.angle)
         rect = rotated.get_rect()
         screen.blit(rotated, self.position - Vector2(rect.width / 2, rect.height / 2))
+
+        if self.show_score:
+            font = pg.font.SysFont("Comic Sans MS", int(20 * self.scale))
+            label = font.render(str(round(self.score)), True, (0, 0, 0))
+            label_rect = label.get_rect()
+            label_rect.center = self.position
+            screen.blit(label, label_rect)
