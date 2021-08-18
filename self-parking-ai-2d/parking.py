@@ -1,20 +1,20 @@
 import pygame as pg
 from random import randint, shuffle
 
-__all__ = 'Parking'
+__all__ = "Parking"
 
 
 class Parking:
 	"""Parking lot with parking places and parked cars"""
-	def __init__(self, *, spawn_cars=None):
+	def __init__(self, spawn_cars=None):
 		if spawn_cars is None:
 			self.cars_num = randint(0, 63)
 		elif 0 <= spawn_cars <= 63:
 			self.cars_num = spawn_cars
 		else:
-			raise ValueError('There are only 63+1 parking places in the parking lot!')
+			raise ValueError("There are only 63+1 parking places in the parking lot!")
 
-		self.background = pg.image.load('sprites/parking.png')
+		self.background = pg.image.load("sprites/parking.png")
 		self.grass_color = 63, 155, 11, 255
 		self.markup_color = 255, 255, 255, 255
 		self.road_color = 80, 80, 80, 255
@@ -42,7 +42,7 @@ class Parking:
 
 		# init cars sprites
 		for i in range(64):
-			sprite = pg.image.load('sprites/car' + str(i+1) + '.png')
+			sprite = pg.image.load("sprites/car" + str(i+1) + ".png")
 			self.cars_sprites.append(sprite)
 
 		# init parked cars and target space

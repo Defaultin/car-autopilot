@@ -1,7 +1,7 @@
-import pygame as pg
 import sys
 import neat
 import pickle
+import pygame as pg
 from highway import Highway
 from car import Car
 
@@ -147,6 +147,7 @@ class Simulation:
         return population.run(self._run_generation, self.generations)
 
     def test(self):
+        """Tests simulation environment"""
         car = Car(self.highway.start_position, self.highway.start_angle, scale=0.5)
 
         while True:
@@ -195,10 +196,12 @@ class Simulation:
 
     @staticmethod
     def save(genome):
+        """Dumps genome configuration to file"""
         with open("checkpoints/best.pickle", "wb") as f:
             pickle.dump(genome, f)
 
     @staticmethod
     def load(file):
+        """Loads genome configuration for file"""
         with open(file, "rb") as f:
             return pickle.load(f)

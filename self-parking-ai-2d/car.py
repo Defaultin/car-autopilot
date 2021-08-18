@@ -3,18 +3,20 @@ import numpy as np
 from pygame.math import Vector2
 from math import sqrt, sin, cos, radians, degrees, copysign
 
-__all__ = 'Car'
+__all__ = "Car"
 
 
 class Car:
     """Kinematic model of a car with radars for calculating distances to objects"""
 
-    def __init__(self, *, spawn_position=(0.0, 0.0), spawn_angle=0):
-        self.car_sprite = pg.image.load('sprites/car0.png')
-        rect = self.car_sprite.get_rect()
-        self.car_sprite_width = 0.5 * rect.width - 5
-        self.car_sprite_height = 0.5 * rect.height - 10
-        self.chassis_length = 0.03 * rect.height
+    def __init__(self, spawn_position=(0.0, 0.0), spawn_angle=0, scale=1, show_collision=False, show_radars=False):
+        sprite = pg.image.load(f"sprites/car0.png")
+        rect = sprite.get_rect()
+        w, h = round(rect.width * scale), round(rect.height * scale)
+        self.car_sprite = pg.transform.scale(sprite, (w, h))
+        self.car_sprite_width = 0.5 * w - 5
+        self.car_sprite_height = 0.5 * h - 10
+        self.chassis_length = 0.03 * h
 
         self.angle = spawn_angle
         self.position = Vector2(*spawn_position)
@@ -22,21 +24,25 @@ class Car:
         self.acceleration = 0.0
         self.steering = 0.0
 
-        self.brake_deceleration = 10.0
-        self.free_deceleration = 2.0
+        self.brake_deceleration = 10.0 * scale
+        self.free_deceleration = 2.0 * scale
 
-        self.max_velocity = 30.0
-        self.max_acceleration = 3.0
-        self.max_steering = 1.0
+        self.max_velocity = 50.0 * scale
+        self.max_acceleration = 3.0 * scale
+        self.max_steering = 1.5 * scale
+        self.max_radar_len = 300 * scale
 
         self.is_alive = True
+        self.parked = False
+        self.scale = scale
+        self.radars_data = np.zeros(5, np.int_)
         self.start_distance = 0
-        self.distance_score = 0
         self.movement_score = 0
-        self.time_score = pg.time.Clock().get_time()
+        self.distance_score = 0
+        self.score = 0
 
-        self.show_collision_points = False
-        self.show_radars = False
+        self.show_collision_points = show_collision
+        self.show_radars = show_radars
 
     def _compute_collision_points(self):
         """Calculates collision points along the sides of the car"""
@@ -67,19 +73,21 @@ class Car:
                     self.is_alive = False
                     break
                 elif color == surface.markup_color:
-                    self.movement_score -= 10
+                    self.movement_score -= 1
                     break
                 else:
-                    self.time_score -= 0.01
-                    self.movement_score += abs(self.velocity.x) * 0.001
+                    self.movement_score += abs(self.velocity.x) * 0.001 / self.scale
                     if self.distance_score > 99:
                         self.distance_score = 1000
                         self.is_alive = False
+                        self.parked = True
                     else:
                         self.distance_score = self._compute_distance_score(surface)
             except IndexError:
                 self.movement_score -= 100
                 self.is_alive = False
+            finally:
+                self.score = self.distance_score + self.movement_score
 
     def _compute_distance_score(self, surface):
         """Calculates distance score depending on the proximity to the target"""
@@ -97,13 +105,13 @@ class Car:
 
         for angle in car_angles:
             length, x, y = 0, 0, 0
-            while length <= 300:
+            while length <= self.max_radar_len:
                 length += 1
                 x = int(self.position.x + length * cos(angle))
                 y = int(self.position.y + length * sin(angle))
                 try:
                     color = screen.get_at((x, y))
-                    if not self.check_color(color, surface):
+                    if not self._check_color(color, surface):
                         break
                 except IndexError:
                     break
@@ -116,7 +124,7 @@ class Car:
         """Calculates distance between rgb colors"""
         return sqrt(sum(map(lambda a, b: (a - b) ** 2, *colors)))
 
-    def check_color(self, color, surface, *, limit=60):
+    def _check_color(self, color, surface, *, limit=60):
         """Checks that the surface color matches the colors allowed for driving"""
         return any([
             self._color_distance(color, surface.road_color) < limit,
@@ -133,28 +141,28 @@ class Car:
     def _update(self, movement, dt):
         """Updates motion parameters according to the kinematics laws and the input direction of the car"""
         # update acceleration
-        if movement["direction"] == "forward":
+        if movement["direction"] in {1, "forward"}:
             if self.velocity.x < 0:
                 self.acceleration = self.brake_deceleration
             else:
                 self.acceleration += dt
-        elif movement["direction"] == "backward":
+        elif movement["direction"] in {-1, "backward"}:
             if self.velocity.x > 0:
                 self.acceleration = -self.brake_deceleration
             else:
                 self.acceleration -= dt
-        elif movement["direction"] == "neutral":
+        elif movement["direction"] in {0, "neutral"}:
             if abs(self.velocity.x) > dt * self.free_deceleration:
                 self.acceleration = -copysign(self.free_deceleration, self.velocity.x)
             elif dt:
                 self.acceleration = -self.velocity.x / dt
 
         # update steering
-        if movement["rotation"] == "right":
+        if movement["rotation"] in {1, "right"}:
             self.steering -= self.max_steering * dt
-        elif movement["rotation"] == "left":
+        elif movement["rotation"] in {-1, "left"}:
             self.steering += self.max_steering * dt
-        elif movement["rotation"] == "neutral":
+        elif movement["rotation"] in {0, "neutral"}:
             self.steering = 0
 
         # update velocity
@@ -181,7 +189,7 @@ class Car:
 
     def draw(self, screen):
         """Renders a car model with radars and collision points"""
-        if self.show_radars:
+        if self.is_alive and self.show_radars:
             for coord in self.radars:
                 pg.draw.line(screen, (255, 140, 0), self.position, coord, 1)
                 pg.draw.circle(screen, (255, 140, 0), coord, 5)
@@ -190,6 +198,8 @@ class Car:
             for coord in self.collision_points:
                 if self.is_alive:
                     pg.draw.circle(screen, (15, 192, 252), coord, 5)
+                elif self.parked:
+                    pg.draw.circle(screen, (0, 255, 0), coord, 5)
                 else:
                     pg.draw.circle(screen, (255, 0, 0), coord, 5)
 
