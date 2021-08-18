@@ -35,14 +35,21 @@ class Car:
         self.is_alive = True
         self.parked = False
         self.scale = scale
-        self.radars_data = np.zeros(5, np.int_)
+        self.radars_data = np.zeros(6, np.int_)
         self.start_distance = 0
-        self.movement_score = 0
         self.distance_score = 0
+        self.movement_score = 0
         self.score = 0
 
         self.show_collision_points = show_collision
         self.show_radars = show_radars
+
+    def _stop(self):
+        """Stops a car model"""
+        self.is_alive = False
+        self.acceleration = 0
+        self.velocity.x = 0
+        self.steering = 0
 
     def _compute_collision_points(self):
         """Calculates collision points along the sides of the car"""
@@ -69,37 +76,38 @@ class Car:
             try:
                 color = screen.get_at(point)
                 if color == surface.grass_color:
-                    self.movement_score -= 100
-                    self.is_alive = False
+                    self.movement_score -= 10
+                    self._stop()
                     break
                 elif color == surface.markup_color:
                     self.movement_score -= 1
                     break
                 else:
-                    self.movement_score += abs(self.velocity.x) * 0.001 / self.scale
                     if self.distance_score > 99:
                         self.distance_score = 1000
-                        self.is_alive = False
+                        self._stop()
                         self.parked = True
+                    elif self.position.x > surface.get_entry():
+                        self.distance_score = 100 * self._compute_distance(surface)
                     else:
-                        self.distance_score = self._compute_distance_score(surface)
+                        self.distance_score = 0
             except IndexError:
-                self.movement_score -= 100
-                self.is_alive = False
+                self.movement_score -= 10
+                self._stop()
             finally:
                 self.score = self.distance_score + self.movement_score
 
-    def _compute_distance_score(self, surface):
-        """Calculates distance score depending on the proximity to the target"""
+    def _compute_distance(self, surface):
+        """Calculates distance depending on the proximity to the target"""
         target_x, target_y = surface.get_target_position()
         distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
         if not self.start_distance:
             self.start_distance = distance
-        return -100 * distance / self.start_distance + 100
+        return -distance / self.start_distance + 1
 
     def _compute_radars(self, screen, surface):
         """Calculates radars and distances from car to surface facilities"""
-        car_angles = np.array([radians(360 - self.angle - 45 * angle) for angle in range(9)])
+        car_angles = np.array([radians(90 - 45 * angle - self.angle) for angle in range(5)])
         self.radars = np.empty((0, 2), np.int_)
         self.radars_data = np.empty(0, np.int_)
 
@@ -118,6 +126,9 @@ class Car:
 
             self.radars = np.append(self.radars, [(x, y)], axis=0)
             self.radars_data = np.append(self.radars_data, length)
+
+        self.radars_data = (self.radars_data - np.min(self.radars_data)) / np.ptp(self.radars_data)
+        self.radars_data = np.append(self.radars_data, self._compute_distance(surface))
 
     @staticmethod
     def _color_distance(*colors):
@@ -191,7 +202,7 @@ class Car:
         """Renders a car model with radars and collision points"""
         if self.is_alive and self.show_radars:
             for coord in self.radars:
-                pg.draw.line(screen, (255, 140, 0), self.position, coord, 1)
+                pg.draw.aaline(screen, (255, 140, 0), self.position, coord, 1)
                 pg.draw.circle(screen, (255, 140, 0), coord, 5)
 
         if self.show_collision_points:

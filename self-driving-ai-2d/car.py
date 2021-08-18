@@ -41,6 +41,13 @@ class Car:
         self.show_collision_points = show_collision
         self.show_radars = show_radars
 
+    def _stop(self):
+        """Stops a car model"""
+        self.is_alive = False
+        self.acceleration = 0
+        self.velocity.x = 0
+        self.steering = 0
+
     def _compute_collision_points(self):
         """Calculates collision points along the sides of the car"""
         sin_alpha = sin(radians(-self.angle))
@@ -66,8 +73,8 @@ class Car:
             try:
                 color = screen.get_at(point)
                 if color == surface.grass_color:
-                    self.score -= 100
-                    self.is_alive = False
+                    self.score -= 10
+                    self._stop()
                     break
                 elif color == surface.markup_color:
                     self.score -= 1
@@ -75,8 +82,8 @@ class Car:
                 else:
                     self.score += self.velocity.x * 0.001 / self.scale
             except IndexError:
-                self.score -= 100
-                self.is_alive = False
+                self.score -= 10
+                self._stop()
 
     def _compute_radars(self, screen, surface):
         """Calculates radars and distances from car to surface facilities"""
@@ -99,6 +106,8 @@ class Car:
 
             self.radars = np.append(self.radars, [(x, y)], axis=0)
             self.radars_data = np.append(self.radars_data, length)
+
+        self.radars_data = (self.radars_data - np.min(self.radars_data)) / np.ptp(self.radars_data)
 
     @staticmethod
     def _color_distance(*colors):
@@ -172,7 +181,7 @@ class Car:
         """Renders a car model with radars and collision points"""
         if self.is_alive and self.show_radars:
             for coord in self.radars:
-                pg.draw.line(screen, (255, 140, 0), self.position, coord, 1)
+                pg.draw.aaline(screen, (255, 140, 0), self.position, coord, 1)
                 pg.draw.circle(screen, (255, 140, 0), coord, 5)
 
         if self.show_collision_points:

@@ -39,18 +39,18 @@ class Simulation:
         else:
             texts = [
                 f"Map: {self.map}",
-                f"Time: {self.time}",
+                f"Time: {self.time}/{self.time_per_map}",
                 f"Cars: {self.cars_left}/{len(self.cars)}",
                 f"Best score: {round(self.best_score)}",
                 f"Epoch: {self.generation}/{self.generations}"
             ]
 
         label_color = 75, 0, 130
-        font = pg.font.SysFont("Comic Sans MS", 40)
+        font = pg.font.SysFont("Comic Sans MS", 20)
         for i, text in enumerate(texts[::-1]):
             label = font.render(text, True, label_color)
             label_rect = label.get_rect()
-            label_rect.center = (160, self.height - 50 - 40 * i)
+            label_rect.center = (120, self.height - 40 - 20 * i)
             self.screen.blit(label, label_rect)
 
     def _init_new_generation(self, genomes, config):
@@ -105,11 +105,10 @@ class Simulation:
                 t = self.clock.get_time() * 0.01
                 car.move(movement_params, t, self.screen, self.highway)
 
-                # update car fitness (for alive cars only)
-                if car.is_alive:
-                    self.best_score = max(self.best_score, car.score)
-                    gen[1].fitness = car.score
-                    self.cars_left += 1
+                # update car fitness
+                self.best_score = max(self.best_score, car.score)
+                gen[1].fitness = car.score
+                self.cars_left += 1 if car.is_alive else 0
 
             # render cars
             self._draw_info()
