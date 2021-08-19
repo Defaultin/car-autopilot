@@ -1,5 +1,5 @@
-import pygame as pg
 import numpy as np
+import pygame as pg
 from math import pi, sin, cos, sqrt, acos, degrees
 from scipy.interpolate import splprep, splev
 

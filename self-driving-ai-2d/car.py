@@ -1,5 +1,5 @@
-import pygame as pg
 import numpy as np
+import pygame as pg
 from random import randint
 from pygame.math import Vector2
 from math import sqrt, sin, cos, radians, degrees, copysign
@@ -29,7 +29,7 @@ class Car:
         self.brake_deceleration = 10.0 * scale
         self.free_deceleration = 2.0 * scale
 
-        self.max_velocity = 50.0 * scale
+        self.max_velocity = 100.0 * scale
         self.max_acceleration = 3.0 * scale
         self.max_steering = 1.5 * scale
         self.max_radar_len = 300 * scale
@@ -81,8 +81,10 @@ class Car:
                 elif color == surface.markup_color:
                     self.score -= 5
                     break
+                elif self.velocity.x > 0:
+                    self.score += self.velocity.x * 0.01 / self.scale
                 else:
-                    self.score += self.velocity.x * 0.001 / self.scale
+                    self.score -= 0.01
             except IndexError:
                 self.score -= 10
                 self._stop()
@@ -107,9 +109,7 @@ class Car:
                     break
 
             self.radars = np.append(self.radars, [(x, y)], axis=0)
-            self.radars_data = np.append(self.radars_data, length)
-
-        self.radars_data = (self.radars_data - np.min(self.radars_data)) / np.ptp(self.radars_data)
+            self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
 
     @staticmethod
     def _color_distance(*colors):

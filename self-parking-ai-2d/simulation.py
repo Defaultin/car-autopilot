@@ -1,6 +1,7 @@
 import sys
 import neat
 import pickle
+import numpy as np
 import pygame as pg
 from car import Car
 from parking import Parking
@@ -98,11 +99,12 @@ class Simulation:
             self.cars_left = 0
             for net, car, gen in zip(self.nets, self.cars, genomes):
                 # get movement params from network
-                output = net.activate(car.radars_data)
-                # direction, rotation = [0 if -0.33 < out < 0.33 else sign(out) for out in output]
-                # movement_params = {"direction": direction, "rotation": rotation}
-                direction, rotation = divmod(output.index(max(output)), 3)
-                movement_params = {"direction": "forward", "rotation": rotation - 1}
+                output = net.activate(np.append(car.radars_data, car.compute_distance(self.parking)))
+
+                # movement params mapping
+                # direction, rotation = divmod(output.index(max(output)), 3)
+                direction, rotation = [0 if -0.33 < out < 0.33 else np.sign(out) for out in output]
+                movement_params = {"direction": direction, "rotation": rotation}
 
                 # move a car
                 t = self.clock.get_time() * 0.01
@@ -201,7 +203,7 @@ class Simulation:
     @staticmethod
     def save(genome):
         """Dumps genome configuration to file"""
-        with open("checkpoints/best.pickle", "wb") as f:
+        with open("checkpoints/best.pkl", "wb") as f:
             pickle.dump(genome, f)
 
     @staticmethod

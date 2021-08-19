@@ -36,7 +36,7 @@ class Car:
         self.is_alive = True
         self.parked = False
         self.scale = scale
-        self.radars_data = np.zeros(6, np.int_)
+        self.radars_data = np.zeros(5, np.int_)
         self.start_distance = 0
         self.distance_score = 0
         self.movement_score = 0
@@ -84,22 +84,21 @@ class Car:
                 elif color == surface.markup_color:
                     self.movement_score -= 5
                     break
+                else self.distance_score > 99:
+                    self.distance_score = 1000
+                    self._stop()
+                    self.parked = True
+                elif self.position.x > surface.get_entry():
+                    self.distance_score = 100 * self.compute_distance(surface)
                 else:
-                    if self.distance_score > 99:
-                        self.distance_score = 1000
-                        self._stop()
-                        self.parked = True
-                    elif self.position.x > surface.get_entry():
-                        self.distance_score = 100 * self._compute_distance(surface)
-                    else:
-                        self.distance_score = 0
+                    self.distance_score = 0
             except IndexError:
                 self.movement_score -= 10
                 self._stop()
             finally:
                 self.score = self.distance_score + self.movement_score
 
-    def _compute_distance(self, surface):
+    def compute_distance(self, surface):
         """Calculates distance depending on the proximity to the target"""
         target_x, target_y = surface.get_target_position()
         distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
@@ -127,10 +126,7 @@ class Car:
                     break
 
             self.radars = np.append(self.radars, [(x, y)], axis=0)
-            self.radars_data = np.append(self.radars_data, length)
-
-        self.radars_data = (self.radars_data - np.min(self.radars_data)) / np.ptp(self.radars_data)
-        self.radars_data = np.append(self.radars_data, self._compute_distance(surface))
+            self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
 
     @staticmethod
     def _color_distance(*colors):
