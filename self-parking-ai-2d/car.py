@@ -84,19 +84,21 @@ class Car:
                 elif color == surface.markup_color:
                     self.movement_score -= 5
                     break
-                else self.distance_score > 99:
-                    self.distance_score = 1000
-                    self._stop()
-                    self.parked = True
-                elif self.position.x > surface.get_entry():
-                    self.distance_score = 100 * self.compute_distance(surface)
-                else:
-                    self.distance_score = 0
             except IndexError:
                 self.movement_score -= 10
                 self._stop()
-            finally:
-                self.score = self.distance_score + self.movement_score
+
+    def _compute_score(self):
+        """Calculates total score according to driving quality and target distance"""
+        if self.distance_score > 99:
+            self.distance_score = 1000
+            self._stop()
+            self.parked = True
+        elif self.position.x > surface.get_entry():
+            self.distance_score = 100 * self.compute_distance(surface)
+        else:
+            self.distance_score = 0
+        self.score = self.distance_score + self.movement_score
 
     def compute_distance(self, surface):
         """Calculates distance depending on the proximity to the target"""
@@ -195,6 +197,7 @@ class Car:
             self._compute_collision_points()
             self._check_collision(screen, surface)
             self._compute_radars(screen, surface)
+            self._compute_score()
 
     def draw(self, screen):
         """Renders a car model with radars and collision points"""

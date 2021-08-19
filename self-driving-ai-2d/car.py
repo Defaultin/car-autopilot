@@ -43,93 +43,6 @@ class Car:
         self.show_radars = show_radars
         self.show_score = show_score
 
-    def _stop(self):
-        """Stops a car model"""
-        self.is_alive = False
-        self.acceleration = 0
-        self.velocity.x = 0
-        self.steering = 0
-
-    def _compute_collision_points(self):
-        """Calculates collision points along the sides of the car"""
-        sin_alpha = sin(radians(-self.angle))
-        cos_alpha = cos(radians(-self.angle))
-
-        left, right = self.position.x - self.car_sprite_width, self.position.x + self.car_sprite_width
-        bottom, top = self.position.y - self.car_sprite_height, self.position.y + self.car_sprite_height
-
-        old_points = np.array([(right, top), (right, bottom), (left, top), (left, bottom)])
-        new_points = np.empty((0, 2), np.int_)
-
-        for old_x, old_y in old_points:
-            x, y = old_x - self.position.x, old_y - self.position.y
-            new_x = self.position.x + x * cos_alpha - y * sin_alpha
-            new_y = self.position.y + x * sin_alpha + y * cos_alpha
-            new_points = np.append(new_points, [(int(new_x), int(new_y))], axis=0)
-
-        self.collision_points = new_points
-
-    def _check_collision(self, screen, surface):
-        """Checks for collisions and reduces score for collisions with grass and markings"""
-        for point in self.collision_points:
-            try:
-                color = screen.get_at(point)
-                if color == surface.grass_color:
-                    self.score -= 10
-                    self._stop()
-                    break
-                elif color == surface.markup_color:
-                    self.score -= 5
-                    break
-                elif self.velocity.x > 0:
-                    self.score += self.velocity.x * 0.01 / self.scale
-                else:
-                    self.score -= 0.01
-            except IndexError:
-                self.score -= 10
-                self._stop()
-
-    def _compute_radars(self, screen, surface):
-        """Calculates radars and distances from car to surface facilities"""
-        car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(5)])
-        self.radars = np.empty((0, 2), np.int_)
-        self.radars_data = np.empty(0, np.int_)
-
-        for angle in car_angles:
-            length, x, y = 0, 0, 0
-            while length <= self.max_radar_len:
-                length += 1
-                x = int(self.position.x + length * cos(angle))
-                y = int(self.position.y + length * sin(angle))
-                try:
-                    color = screen.get_at((x, y))
-                    if not self.check_color(color, surface):
-                        break
-                except IndexError:
-                    break
-
-            self.radars = np.append(self.radars, [(x, y)], axis=0)
-            self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
-
-    @staticmethod
-    def _color_distance(*colors):
-        """Calculates distance between rgb colors"""
-        return sqrt(sum(map(lambda a, b: (a - b) ** 2, *colors)))
-
-    def check_color(self, color, surface, *, limit=60):
-        """Checks that the surface color matches the colors allowed for driving"""
-        return any([
-            self._color_distance(color, surface.road_color) < limit,
-            self._color_distance(color, surface.pointers_color) < limit,
-            self._color_distance(color, surface.road_pointers_color) < limit
-        ])
-
-    def _check_params(self):
-        """Checks if params are out of maximum ranges"""
-        self.velocity.x = max(-self.max_velocity, min(self.velocity.x, self.max_velocity))
-        self.acceleration = max(-self.max_acceleration, min(self.acceleration, self.max_acceleration))
-        self.steering = max(-self.max_steering, min(self.steering, self.max_steering))
-
     def _update(self, movement, dt):
         """Updates motion parameters according to the kinematics laws and the input direction of the car"""
         # update acceleration
@@ -171,6 +84,93 @@ class Car:
         self.position += self.velocity.rotate(-self.angle) * dt
         self.angle += degrees(angular_velocity) * dt
 
+    def _check_params(self):
+        """Checks if params are out of maximum ranges"""
+        self.velocity.x = max(-self.max_velocity, min(self.velocity.x, self.max_velocity))
+        self.acceleration = max(-self.max_acceleration, min(self.acceleration, self.max_acceleration))
+        self.steering = max(-self.max_steering, min(self.steering, self.max_steering))
+
+    def _stop(self):
+        """Stops a car model"""
+        self.is_alive = False
+        self.acceleration = 0
+        self.velocity.x = 0
+        self.steering = 0
+
+    def _compute_collision_points(self):
+        """Calculates collision points along the sides of the car"""
+        sin_alpha = sin(radians(-self.angle))
+        cos_alpha = cos(radians(-self.angle))
+
+        left, right = self.position.x - self.car_sprite_width, self.position.x + self.car_sprite_width
+        bottom, top = self.position.y - self.car_sprite_height, self.position.y + self.car_sprite_height
+
+        old_points = np.array([(right, top), (right, bottom), (left, top), (left, bottom)])
+        new_points = np.empty((0, 2), np.int_)
+
+        for old_x, old_y in old_points:
+            x, y = old_x - self.position.x, old_y - self.position.y
+            new_x = self.position.x + x * cos_alpha - y * sin_alpha
+            new_y = self.position.y + x * sin_alpha + y * cos_alpha
+            new_points = np.append(new_points, [(int(new_x), int(new_y))], axis=0)
+
+        self.collision_points = new_points
+
+    def _check_collision(self, screen, surface):
+        """Checks for collisions and reduces score for collisions with grass and markings"""
+        for point in self.collision_points:
+            try:
+                color = screen.get_at(point)
+                if color == surface.grass_color:
+                    self.score -= 10
+                    self._stop()
+                    break
+                elif color == surface.markup_color:
+                    self.score -= 5
+                    break
+            except IndexError:
+                self.score -= 10
+                self._stop()
+
+    def _compute_radars(self, screen, surface):
+        """Calculates radars and distances from car to surface facilities"""
+        car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(5)])
+        self.radars = np.empty((0, 2), np.int_)
+        self.radars_data = np.empty(0, np.int_)
+
+        for angle in car_angles:
+            length, x, y = 0, 0, 0
+            while length <= self.max_radar_len:
+                length += 1
+                x = int(self.position.x + length * cos(angle))
+                y = int(self.position.y + length * sin(angle))
+                try:
+                    color = screen.get_at((x, y))
+                    if not self.check_color(color, surface):
+                        break
+                except IndexError:
+                    break
+
+            self.radars = np.append(self.radars, [(x, y)], axis=0)
+            self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
+
+    @staticmethod
+    def _color_distance(*colors):
+        """Calculates distance between rgb colors"""
+        return sqrt(sum(map(lambda a, b: (a - b) ** 2, *colors)))
+
+    def check_color(self, color, surface, *, limit=60):
+        """Checks that the surface color matches the colors allowed for driving"""
+        return any([
+            self._color_distance(color, surface.road_color) < limit,
+            self._color_distance(color, surface.pointers_color) < limit,
+            self._color_distance(color, surface.road_pointers_color) < limit
+        ])
+
+    def _compute_score(self):
+        """Charges score points for forward ride quality"""
+        self.score += self.velocity.x * 0.01 / self.scale if self.velocity.x > 0 else -0.01
+
     def move(self, movement, dt, screen, surface):
         """Moves a car model according to the kinematics laws and the input direction"""
         if self.is_alive:
@@ -178,6 +178,7 @@ class Car:
             self._compute_collision_points()
             self._check_collision(screen, surface)
             self._compute_radars(screen, surface)
+            self._compute_score()
 
     def draw(self, screen):
         """Renders a car model with radars and collision points"""
