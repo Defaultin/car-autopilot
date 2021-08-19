@@ -28,7 +28,7 @@ class Car:
         self.brake_deceleration = 10.0 * scale
         self.free_deceleration = 2.0 * scale
 
-        self.max_velocity = 50.0 * scale
+        self.max_velocity = 100.0 * scale
         self.max_acceleration = 3.0 * scale
         self.max_steering = 1.5 * scale
         self.max_radar_len = 300 * scale
@@ -36,7 +36,9 @@ class Car:
         self.is_alive = True
         self.parked = False
         self.scale = scale
-        self.radars_data = np.zeros(5, np.int_)
+        self.radars_data = np.zeros(9, np.int_)
+
+        self.target_distance = 0
         self.start_distance = 0
         self.distance_score = 0
         self.movement_score = 0
@@ -45,6 +47,53 @@ class Car:
         self.show_collision_points = show_collision
         self.show_radars = show_radars
         self.show_score = show_score
+
+    def _update(self, movement, dt):
+        """Updates motion parameters according to the kinematics laws and the input direction of the car"""
+        # update acceleration
+        if movement["direction"] in {1, "forward"}:
+            if self.velocity.x < 0:
+                self.acceleration = self.brake_deceleration
+            else:
+                self.acceleration += dt
+        elif movement["direction"] in {-1, "backward"}:
+            if self.velocity.x > 0:
+                self.acceleration = -self.brake_deceleration
+            else:
+                self.acceleration -= dt
+        elif movement["direction"] in {0, "neutral"}:
+            if abs(self.velocity.x) > dt * self.free_deceleration:
+                self.acceleration = -copysign(self.free_deceleration, self.velocity.x)
+            elif dt:
+                self.acceleration = -self.velocity.x / dt
+
+        # update steering
+        if movement["rotation"] in {1, "right"}:
+            self.steering -= self.max_steering * dt
+        elif movement["rotation"] in {-1, "left"}:
+            self.steering += self.max_steering * dt
+        elif movement["rotation"] in {0, "neutral"}:
+            self.steering = 0
+
+        # update velocity
+        self.velocity.x += self.acceleration * dt
+        self._check_params()
+
+        # update position and angle
+        if self.steering:
+            turning_radius = self.chassis_length / sin(radians(self.steering))
+            angular_velocity = self.velocity.x / turning_radius
+        else:
+            angular_velocity = 0
+
+        self.position += self.velocity.rotate(-self.angle) * dt
+        self.angle += degrees(angular_velocity) * dt
+
+    def _check_params(self):
+        """Checks if params are out of maximum ranges"""
+        self.velocity.x = max(-self.max_velocity, min(self.velocity.x, self.max_velocity))
+        self.acceleration = max(-self.max_acceleration, min(self.acceleration, self.max_acceleration))
+        self.steering = max(-self.max_steering, min(self.steering, self.max_steering))
 
     def _stop(self):
         """Stops a car model"""
@@ -88,29 +137,9 @@ class Car:
                 self.movement_score -= 10
                 self._stop()
 
-    def _compute_score(self):
-        """Calculates total score according to driving quality and target distance"""
-        if self.distance_score > 99:
-            self.distance_score = 1000
-            self._stop()
-            self.parked = True
-        elif self.position.x > surface.get_entry():
-            self.distance_score = 100 * self.compute_distance(surface)
-        else:
-            self.distance_score = 0
-        self.score = self.distance_score + self.movement_score
-
-    def compute_distance(self, surface):
-        """Calculates distance depending on the proximity to the target"""
-        target_x, target_y = surface.get_target_position()
-        distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
-        if not self.start_distance:
-            self.start_distance = distance
-        return -distance / self.start_distance + 1
-
     def _compute_radars(self, screen, surface):
         """Calculates radars and distances from car to surface facilities"""
-        car_angles = np.array([radians(90 - 45 * angle - self.angle) for angle in range(5)])
+        car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(9)])
         self.radars = np.empty((0, 2), np.int_)
         self.radars_data = np.empty(0, np.int_)
 
@@ -143,52 +172,23 @@ class Car:
             self._color_distance(color, surface.road_pointers_color) < limit
         ])
 
-    def _check_params(self):
-        """Checks if params are out of maximum ranges"""
-        self.velocity.x = max(-self.max_velocity, min(self.velocity.x, self.max_velocity))
-        self.acceleration = max(-self.max_acceleration, min(self.acceleration, self.max_acceleration))
-        self.steering = max(-self.max_steering, min(self.steering, self.max_steering))
+    def _compute_target_distance(self, surface):
+        """Calculates distance ratio depending on the proximity to the target"""
+        target_x, target_y = surface.get_target_position()
+        distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
+        if not self.start_distance:
+            self.start_distance = distance
+        self.target_distance = -distance / self.start_distance + 1
 
-    def _update(self, movement, dt):
-        """Updates motion parameters according to the kinematics laws and the input direction of the car"""
-        # update acceleration
-        if movement["direction"] in {1, "forward"}:
-            if self.velocity.x < 0:
-                self.acceleration = self.brake_deceleration
-            else:
-                self.acceleration += dt
-        elif movement["direction"] in {-1, "backward"}:
-            if self.velocity.x > 0:
-                self.acceleration = -self.brake_deceleration
-            else:
-                self.acceleration -= dt
-        elif movement["direction"] in {0, "neutral"}:
-            if abs(self.velocity.x) > dt * self.free_deceleration:
-                self.acceleration = -copysign(self.free_deceleration, self.velocity.x)
-            elif dt:
-                self.acceleration = -self.velocity.x / dt
-
-        # update steering
-        if movement["rotation"] in {1, "right"}:
-            self.steering -= self.max_steering * dt
-        elif movement["rotation"] in {-1, "left"}:
-            self.steering += self.max_steering * dt
-        elif movement["rotation"] in {0, "neutral"}:
-            self.steering = 0
-
-        # update velocity
-        self.velocity.x += self.acceleration * dt
-        self._check_params()
-
-        # update position and angle
-        if self.steering:
-            turning_radius = self.chassis_length / sin(radians(self.steering))
-            angular_velocity = self.velocity.x / turning_radius
-        else:
-            angular_velocity = 0
-
-        self.position += self.velocity.rotate(-self.angle) * dt
-        self.angle += degrees(angular_velocity) * dt
+    def _compute_score(self):
+        """Charges score points according to driving quality and target distance"""
+        self.movement_score -= 0.1 if abs(self.velocity.x) < 1 else 0.01
+        self.distance_score = 100 * self.target_distance
+        if self.distance_score > 99:
+            self.distance_score = 1000
+            self._stop()
+            self.parked = True
+        self.score = self.distance_score + self.movement_score
 
     def move(self, movement, dt, screen, surface):
         """Moves a car model according to the kinematics laws and the input direction"""
@@ -197,6 +197,7 @@ class Car:
             self._compute_collision_points()
             self._check_collision(screen, surface)
             self._compute_radars(screen, surface)
+            self._compute_target_distance(surface)
             self._compute_score()
 
     def draw(self, screen):

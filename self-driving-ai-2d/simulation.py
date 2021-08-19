@@ -40,8 +40,8 @@ class Simulation:
         else:
             texts = [
                 f"Map: {self.map}",
-                f"Time: {self.time}/{self.time_per_map}",
                 f"Cars: {self.cars_left}/{len(self.cars)}",
+                f"Time: {self.time}/{self.time_per_map}",
                 f"Best score: {round(self.best_score)}",
                 f"Epoch: {self.generation}/{self.generations}"
             ]

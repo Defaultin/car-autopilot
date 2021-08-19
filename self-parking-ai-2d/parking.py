@@ -60,11 +60,6 @@ class Parking:
 		"""Returns the center of a parking space relative to the car sprite"""
 		return place[0] + place[2] / 2 - car.get_size()[0] / 2, place[1] + place[3] / 2 - car.get_size()[1] / 2
 
-	@staticmethod
-	def get_entry():
-		"""Returns the parking entrance vertical position"""
-		return 190
-
 	def get_target_position(self):
 		"""Returns the center of a target space"""
 		x, y, w, h = self.spaces[self.target_idx]
@@ -73,6 +68,8 @@ class Parking:
 	def draw(self, screen):
 		"""Renders parked cars and target space"""
 		screen.blit(self.background, (0, 0))
+		pg.draw.rect(screen, self.grass_color, (20, 20, 160, 481), 0)
+		pg.draw.rect(screen, self.markup_color, (20, 20, 160, 481), 5)
 		pg.draw.rect(screen, self.pointers_color, self.spaces[self.target_idx], 5)
 		for i in self.parked_idxs:
 			car = self.cars_sprites[i-1]

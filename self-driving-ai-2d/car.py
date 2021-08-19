@@ -168,7 +168,7 @@ class Car:
         ])
 
     def _compute_score(self):
-        """Charges score points for forward ride quality"""
+        """Charges score points for forward driving quality"""
         self.score += self.velocity.x * 0.01 / self.scale if self.velocity.x > 0 else -0.01
 
     def move(self, movement, dt, screen, surface):

@@ -39,8 +39,8 @@ class Simulation:
         else:
             texts = [
                 f"Map: {self.map}",
-                f"Time: {self.time}/{self.time_per_map}",
                 f"Cars: {self.cars_left}/{len(self.cars)}",
+                f"Time: {self.time}/{self.time_per_map}",
                 f"Best score: {round(self.best_score)}",
                 f"Epoch: {self.generation}/{self.generations}"
             ]
@@ -62,7 +62,7 @@ class Simulation:
         for _, gen in genomes:
             gen.fitness = 0
             net = neat.nn.FeedForwardNetwork.create(gen, config)
-            car = Car(spawn_position=(200, 580))
+            car = Car(spawn_position=(100, 580))
             self.nets.append(net)
             self.cars.append(car)
 
@@ -99,7 +99,7 @@ class Simulation:
             self.cars_left = 0
             for net, car, gen in zip(self.nets, self.cars, genomes):
                 # get movement params from network
-                output = net.activate(np.append(car.radars_data, car.compute_distance(self.parking)))
+                output = net.activate(np.append(car.radars_data, car.target_distance))
 
                 # movement params mapping
                 # direction, rotation = divmod(output.index(max(output)), 3)
@@ -152,7 +152,7 @@ class Simulation:
 
     def test(self):
         """Tests simulation environment"""
-        car = Car(spawn_position=(100, 150), spawn_angle=-90)
+        car = Car(spawn_position=(100, 580))
 
         while True:
             # events
@@ -162,9 +162,9 @@ class Simulation:
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_g:         # shuffle parked cars
                         self.parking.randomize()
-                        car = Car(spawn_position=(100, 150), spawn_angle=-90)
+                        car = Car(spawn_position=(100, 580))
                     elif event.key == pg.K_h:       # reset car position
-                        car = Car(spawn_position=(100, 150), spawn_angle=-90)
+                        car = Car(spawn_position=(100, 580))
                     elif event.key == pg.K_j:       # show collision points
                         car.show_collision_points = False if car.show_collision_points else True
                     elif event.key == pg.K_k:       # show collision radars
