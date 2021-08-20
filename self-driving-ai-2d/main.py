@@ -24,10 +24,17 @@ def main():
     Generation time: 59.423 sec (52.256 average)
     """
     sim = Simulation(epochs=100, map_spread=(150, 350), map_complexity=5, time_per_map=3000)
+
+    # Train autopilot on simulation environment
     best_genome = sim.train("self-driving.conf")
     sim.save(best_genome)
+
+    # Test simulation environment with autopilot
     # best_genome = sim.load("checkpoints/best.pkl")
     # sim.test(best_genome, "self-driving.conf")
+
+    # Test simulation environment without autopilot
+    # sim.test()
 
 
 if __name__ == '__main__':

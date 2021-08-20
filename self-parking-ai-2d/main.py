@@ -2,9 +2,19 @@ from simulation import Simulation
 
 
 def main():
+    """"""
     sim = Simulation(epochs=1000, time_per_map=500)
-    best = sim.train("self-parking.conf")
-    sim.save(best)
+
+    # Train autopilot on simulation environment
+    best_genome = sim.train("self-parking.conf")
+    sim.save(best_genome)
+
+    # Test simulation environment with autopilot
+    # best_genome = sim.load("checkpoints/best.pkl")
+    # sim.test(best_genome, "self-parking.conf")
+
+    # Test simulation environment without autopilot
+    # sim.test()
 
 
 if __name__ == '__main__':
