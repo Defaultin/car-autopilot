@@ -16,7 +16,7 @@ class Simulation:
         pg.display.set_caption("Self-driving simulation")
         self.window = 1320, 768
         self.width, self.height = self.window
-        self.screen = pg.display.set_mode(self.window)
+        self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
         self.clock = pg.time.Clock()
 
         self.highway = Highway((self.width // 2, self.height // 2), map_spread, map_complexity, width=30)
