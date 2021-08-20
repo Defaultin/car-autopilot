@@ -14,7 +14,7 @@ class Simulation:
         pg.display.set_caption('Self-parking simulation')
         self.window = 1320, 768
         self.width, self.height = self.window
-        self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
+        self.screen = pg.display.set_mode(self.window)
         self.clock = pg.time.Clock()
 
         self.parking = Parking(spawn_cars=parked_cars)

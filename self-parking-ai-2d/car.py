@@ -28,7 +28,7 @@ class Car:
         self.brake_deceleration = 10.0 * scale
         self.free_deceleration = 2.0 * scale
 
-        self.max_velocity = 100.0 * scale
+        self.max_velocity = 50.0 * scale
         self.max_acceleration = 3.0 * scale
         self.max_steering = 1.5 * scale
         self.max_radar_len = int(300 * scale)
@@ -131,7 +131,7 @@ class Car:
                     self._stop()
                     break
                 elif color == surface.markup_color:
-                    self.movement_score -= 5
+                    self.movement_score -= 1
                     break
             except IndexError:
                 self.movement_score -= 10
