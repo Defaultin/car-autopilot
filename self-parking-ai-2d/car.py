@@ -31,12 +31,12 @@ class Car:
         self.max_velocity = 100.0 * scale
         self.max_acceleration = 3.0 * scale
         self.max_steering = 1.5 * scale
-        self.max_radar_len = 300 * scale
+        self.max_radar_len = int(300 * scale)
 
         self.is_alive = True
         self.parked = False
         self.scale = scale
-        self.radars_data = np.zeros(9, np.int_)
+        self.radars_data = np.zeros(8, np.int_)
 
         self.target_distance = 0
         self.start_distance = 0
@@ -139,14 +139,13 @@ class Car:
 
     def _compute_radars(self, screen, surface):
         """Calculates radars and distances from car to surface facilities"""
-        car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(9)])
+        car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(8)])
         self.radars = np.empty((0, 2), np.int_)
         self.radars_data = np.empty(0, np.int_)
+        length, x, y = 0, 0, 0
 
         for angle in car_angles:
-            length, x, y = 0, 0, 0
-            while length <= self.max_radar_len:
-                length += 1
+            for length in range(1, self.max_radar_len + 1):
                 x = int(self.position.x + length * cos(angle))
                 y = int(self.position.y + length * sin(angle))
                 try:
@@ -178,7 +177,8 @@ class Car:
         distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
         if not self.start_distance:
             self.start_distance = distance
-        self.target_distance = -distance / self.start_distance + 1
+        ratio = -distance / self.start_distance + 1
+        self.target_distance = ratio if ratio > 0 else 0
 
     def _compute_score(self):
         """Charges score points according to driving quality and target distance"""

@@ -16,7 +16,7 @@ class Simulation:
         pg.display.set_caption("Self-driving simulation")
         self.window = 1320, 768
         self.width, self.height = self.window
-        self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
+        self.screen = pg.display.set_mode(self.window)
         self.clock = pg.time.Clock()
 
         self.highway = Highway((self.width // 2, self.height // 2), map_spread, map_complexity, width=30)
@@ -150,9 +150,20 @@ class Simulation:
 
         return population.run(self._run_generation, self.generations)
 
-    def test(self):
+    def test(self, genome=None, config_file=None):
         """Tests simulation environment"""
         car = Car(self.highway.start_position, self.highway.start_angle, scale=0.5)
+        if genome and config_file:
+            config = neat.config.Config(
+                neat.DefaultGenome,
+                neat.DefaultReproduction,
+                neat.DefaultSpeciesSet,
+                neat.DefaultStagnation,
+                config_file
+            )
+            autopilot = neat.nn.FeedForwardNetwork.create(genome, config)
+        else:
+            autopilot = None
 
         while True:
             # events binding
@@ -175,25 +186,28 @@ class Simulation:
                         sys.exit(0)
 
             # keyboard inputs
-            pressed = pg.key.get_pressed()
-            movement_params = dict()
-
-            if pressed[pg.K_UP] or pressed[pg.K_w]:
-                movement_params["direction"] = "forward"
-            elif pressed[pg.K_DOWN] or pressed[pg.K_s]:
-                movement_params["direction"] = "backward"
+            if autopilot:
+                output = autopilot.activate(np.append(car.radars_data, car.velocity.x / car.max_velocity))
+                direction, rotation = [0 if -0.33 < out < 0.33 else np.sign(out) for out in output]
             else:
-                movement_params["direction"] = "neutral"
+                pressed = pg.key.get_pressed()
+                if pressed[pg.K_UP] or pressed[pg.K_w]:
+                    direction = "forward"
+                elif pressed[pg.K_DOWN] or pressed[pg.K_s]:
+                    direction = "backward"
+                else:
+                    direction = "neutral"
 
-            if pressed[pg.K_RIGHT] or pressed[pg.K_d]:
-                movement_params["rotation"] = "right"
-            elif pressed[pg.K_LEFT] or pressed[pg.K_a]:
-                movement_params["rotation"] = "left"
-            else:
-                movement_params["rotation"] = "neutral"
+                if pressed[pg.K_RIGHT] or pressed[pg.K_d]:
+                    rotation = "right"
+                elif pressed[pg.K_LEFT] or pressed[pg.K_a]:
+                    rotation = "left"
+                else:
+                    rotation = "neutral"
 
             # car movement logic
             self.highway.draw(self.screen)
+            movement_params = {"direction": direction, "rotation": rotation}
             car.move(movement_params, self.clock.get_time() * 0.01, self.screen, self.highway)
             car.draw(self.screen)
             self._draw_info(car)

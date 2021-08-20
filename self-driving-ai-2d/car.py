@@ -32,7 +32,7 @@ class Car:
         self.max_velocity = 100.0 * scale
         self.max_acceleration = 3.0 * scale
         self.max_steering = 1.5 * scale
-        self.max_radar_len = 300 * scale
+        self.max_radar_len = int(300 * scale)
 
         self.is_alive = True
         self.radars_data = np.zeros(5, np.int_)
@@ -137,16 +137,15 @@ class Car:
         car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(5)])
         self.radars = np.empty((0, 2), np.int_)
         self.radars_data = np.empty(0, np.int_)
+        length, x, y = 0, 0, 0
 
         for angle in car_angles:
-            length, x, y = 0, 0, 0
-            while length <= self.max_radar_len:
-                length += 1
+            for length in range(1, self.max_radar_len + 1):
                 x = int(self.position.x + length * cos(angle))
                 y = int(self.position.y + length * sin(angle))
                 try:
                     color = screen.get_at((x, y))
-                    if not self.check_color(color, surface):
+                    if not self._check_color(color, surface):
                         break
                 except IndexError:
                     break
@@ -159,7 +158,7 @@ class Car:
         """Calculates distance between rgb colors"""
         return sqrt(sum(map(lambda a, b: (a - b) ** 2, *colors)))
 
-    def check_color(self, color, surface, *, limit=60):
+    def _check_color(self, color, surface, *, limit=60):
         """Checks that the surface color matches the colors allowed for driving"""
         return any([
             self._color_distance(color, surface.road_color) < limit,
