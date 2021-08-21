@@ -1,6 +1,6 @@
 # Self-parking AI
 
-Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](https://github.com/Defaultin/car-autopilot/blob/master/papers/neat.pdf)) on on randomly generated parking lot in a 2D simulation.
+Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](https://github.com/Defaultin/car-autopilot/blob/master/papers/neat.pdf)) on randomly generated parking lot in a 2D simulation.
 
 ---
 
@@ -26,7 +26,7 @@ Cars are randomly placed on the parking lot and a target spot for subsequent par
 
 ## Car
 
-* Сar model is described in terms of acceleration, velocity, steering, and position according to kinematic laws.
+* Сar model is described in terms of acceleration, velocity, steering, and position according to kinematical laws.
 * Сar model has 4 sensors which determine collisions with obstacles while driving.
 * Сar model has 8 radars which determine position of obstacles and distance to them.
 
