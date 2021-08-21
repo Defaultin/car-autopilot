@@ -3,7 +3,7 @@ from autopilot import Simulation
 
 def main():
     """"""
-    sim = Simulation(epochs=1000, time_per_map=500)
+    sim = Simulation(epochs=1000, time_per_map=200)
 
     # Train autopilot on simulation environment
     best_genome = sim.train()

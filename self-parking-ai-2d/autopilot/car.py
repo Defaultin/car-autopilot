@@ -131,7 +131,7 @@ class Car:
                     self._stop()
                     break
                 elif color == surface.markup_color:
-                    self.movement_score -= 1
+                    self.movement_score -= 5
                     break
             except IndexError:
                 self.movement_score -= 10
