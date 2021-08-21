@@ -1,6 +1,6 @@
 # Project Description
 
-This project presents methods for training Autonomous Driving Models using NeuroEvolution of Augmenting Topologies and Deep Learning and theirs implementation in 2D and 3D simulations.
+This project presents methods for training Autonomous Driving Models using NeuroEvolution of Augmenting Topologies and Deep Learning and their implementation in 2D and 3D simulations.
 
 ## [#1](https://github.com/Defaultin/car-autopilot/tree/master/self-driving-ai-2d) - Self-driving 2D
 
