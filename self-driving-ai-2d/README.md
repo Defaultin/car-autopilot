@@ -22,7 +22,7 @@ Highway is generated as a random curve using simple [circle polarization](https:
 
 ## Car
 
-* Сar model is described in terms of acceleration, velocity, steering, and position according to kinematic laws.
+* Сar model is described in terms of acceleration, velocity, steering, and position according to kinematical laws.
 * Сar model has 4 sensors which determine collisions with obstacles while driving.
 * Сar model has 8 radars which determine position of obstacles and distance to them.
 
