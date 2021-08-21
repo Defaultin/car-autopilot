@@ -18,7 +18,7 @@ Video
 
 ## Parking Lot
 
-Cars are randomly placed on the parking lot and target place for subsequent parking is selected.
+Cars are randomly placed on the parking lot and a target spot for subsequent parking is selected.
 
 ![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/autopilot/sprites/parking.png "Parking lot")
 
