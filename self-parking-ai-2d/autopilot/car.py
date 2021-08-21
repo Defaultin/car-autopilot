@@ -122,7 +122,7 @@ class Car:
         self.collision_points = new_points
 
     def _check_collision(self, screen, surface):
-        """Checks for collisions and reduces score for collisions with grass and markings"""
+        """Checks for collisions and reduces score for collisions with obstacles"""
         for point in self.collision_points:
             if not self._safe_position(point, screen, surface):
                 self.movement_score -= 10
