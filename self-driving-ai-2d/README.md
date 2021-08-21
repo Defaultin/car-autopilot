@@ -26,7 +26,7 @@ Highway generates as a random curve using simple [circle polarization](https://e
 * Сar model has 4 sensors which determine collisions with obstacles while driving.
 * Сar model has 5 sensors which determine position of obstacles and distance to them.
 
-![Car model](https://github.com/Defaultin/car-autopilot/blob/master/self-driving-ai-2d/car-model.png)
+![](https://github.com/Defaultin/car-autopilot/blob/master/self-driving-ai-2d/demo/car-model.png "Car model")
 
 ---
 
