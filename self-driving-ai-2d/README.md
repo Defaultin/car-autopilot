@@ -1,6 +1,6 @@
 # Self-driving AI
 
-Autonomous driving model trained using NeuroEvolution of Augmenting Topologies ([NEAT](https://github.com/Defaultin/car-autopilot/blob/master/papers/neat.pdf)) on on randomly generated highways in a 2D simulation.
+Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](https://github.com/Defaultin/car-autopilot/blob/master/papers/neat.pdf)) on on randomly generated highways in a 2D simulation.
 
 ---
 
@@ -12,11 +12,19 @@ Autonomous driving model trained using NeuroEvolution of Augmenting Topologies (
 ### Test process
 ![]()
 
+---
+
 ## Highway
+
+---
 
 ## Car
 
+---
+
 ## Simulation
+
+---
 
 ## Usage
 
@@ -41,6 +49,8 @@ sim.test(best_genome)
 sim = Simulation(map_spread=(150, 350), map_complexity=5)
 sim.test()
 ```
+
+---
 
 ## Dependencies
 
