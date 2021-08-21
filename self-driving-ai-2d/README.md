@@ -4,7 +4,11 @@ Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](ht
 
 ---
 
-## Demo
+## Autopilot Demo
+
+| Train process | Test process |
+| ------------- | ------------ |
+| https://user-images.githubusercontent.com/50778301/130317126-05031708-a00b-4a59-b427-0fdbe1dc7393.mp4 | https://user-images.githubusercontent.com/50778301/130317082-910b5248-8bde-4d65-a882-f3db897f6f6c.mp4 |
 
 ### Train process
 https://user-images.githubusercontent.com/50778301/130317126-05031708-a00b-4a59-b427-0fdbe1dc7393.mp4
@@ -31,6 +35,8 @@ Highway generates as a random curve using simple [circle polarization](https://e
 ---
 
 ## Simulation
+
+
 
 ---
 
