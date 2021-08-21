@@ -16,7 +16,9 @@ https://user-images.githubusercontent.com/50778301/130317082-910b5248-8bde-4d65-
 
 ## Parking Lot
 
+Cars are randomly placed on the parking lot and target place for subsequent parking is selected.
 
+![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/autopilot/sprites/parking.png "Parking lot")
 
 ---
 
@@ -80,4 +82,3 @@ $ pip3 install -r self-driving-ai-2d/requirements.txt
 * neat-python
 * numpy
 * pygame
-* scipy
