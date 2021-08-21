@@ -1,6 +1,6 @@
 # Self-driving AI
 
-Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](https://github.com/Defaultin/car-autopilot/blob/master/papers/neat.pdf)) on on randomly generated highways in a 2D simulation.
+Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](https://github.com/Defaultin/car-autopilot/blob/master/papers/neat.pdf)) on randomly generated highways in a 2D simulation.
 
 ---
 
