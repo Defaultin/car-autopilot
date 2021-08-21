@@ -24,7 +24,7 @@ Highway generates as a random curve using simple [circle polarization](https://e
 
 * Сar model is described in terms of acceleration, velocity, steering, and position according to kinematic laws.
 * Сar model has 4 sensors which determine collisions with obstacles while driving.
-* Сar model has 5 sensors which determine position of obstacles and distance to them.
+* Сar model has 8 sensors which determine position of obstacles and distance to them.
 
 ![](https://github.com/Defaultin/car-autopilot/blob/master/self-driving-ai-2d/demo/car-model.png "Car model")
 
