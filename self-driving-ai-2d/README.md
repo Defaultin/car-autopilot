@@ -16,7 +16,7 @@ https://user-images.githubusercontent.com/50778301/130317082-910b5248-8bde-4d65-
 
 ## Highway
 
-Highway generates as a random curve using simple [circle polarization](https://en.wikipedia.org/wiki/Polar_coordinate_system) and [B-spline interpolation](https://en.wikipedia.org/wiki/B-spline).
+Highway is generated as a random curve using simple [circle polarization](https://en.wikipedia.org/wiki/Polar_coordinate_system) and [B-spline interpolation](https://en.wikipedia.org/wiki/B-spline).
 
 ---
 
