@@ -7,10 +7,10 @@ Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](ht
 ## Demo
 
 ### Train process
-![]()
+![Train process](https://github.com/Defaultin/car-autopilot/blob/master/self-driving-ai-2d/demo/train-demo.mp4)
 
 ### Test process
-![]()
+![Train process](https://github.com/Defaultin/car-autopilot/blob/master/self-driving-ai-2d/demo/test-demo.mp4)
 
 ---
 
