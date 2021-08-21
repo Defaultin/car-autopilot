@@ -8,7 +8,11 @@ Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](ht
 
 ### Train process
 
+Video
+
 ### Test process
+
+Video
 
 ---
 
