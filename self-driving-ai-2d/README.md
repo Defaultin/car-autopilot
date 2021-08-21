@@ -16,9 +16,17 @@ https://user-images.githubusercontent.com/50778301/130317082-910b5248-8bde-4d65-
 
 ## Highway
 
+Highway generates as a random curve using simple [circle polarization](https://en.wikipedia.org/wiki/Polar_coordinate_system) and [B-spline interpolation](https://en.wikipedia.org/wiki/B-spline).
+
 ---
 
 ## Car
+
+* Сar model is described in terms of acceleration, velocity, steering, and position according to kinematic laws.
+* Сar model has 4 sensors which determine collisions with obstacles while driving.
+* Сar model has 5 sensors which determine position of obstacles and distance to them.
+
+![Car model](https://github.com/Defaultin/car-autopilot/blob/master/self-driving-ai-2d/car-model.png)
 
 ---
 
@@ -54,11 +62,11 @@ sim.test()
 
 ## Dependencies
 
+```bash
+$ pip3 install -r self-driving-ai-2d/requirements.txt
+```
+
 * neat-python
 * numpy
 * pygame
 * scipy
-
-```bash
-$ pip3 install -r self-driving-ai-2d/requirements.txt
-```
