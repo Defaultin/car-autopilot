@@ -7,7 +7,7 @@ Autopilot model trained using NeuroEvolution of Augmenting Topologies ([NEAT](ht
 ## Autopilot Demo
 
 ### Train process
-https://user-images.githubusercontent.com/50778301/130317126-05031708-a00b-4a59-b427-0fdbe1dc7393.mp4
+https://user-images.githubusercontent.com/50778301/130320680-dce014f9-1d95-46e5-8e39-1b0473a51f32.mp4
 
 ### Test process
 https://user-images.githubusercontent.com/50778301/130317082-910b5248-8bde-4d65-a882-f3db897f6f6c.mp4
