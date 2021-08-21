@@ -54,6 +54,8 @@ sim.save(best_genome)
 
 ### Test simulation environment with autopilot
 ```python
+from autopilot import Simulation
+
 sim = Simulation(map_spread=(150, 350), map_complexity=5)
 best_genome = sim.load("checkpoints/best.pkl")
 sim.test(best_genome)
@@ -61,6 +63,8 @@ sim.test(best_genome)
 
 ### Test simulation environment without autopilot
 ```python
+from autopilot import Simulation
+
 sim = Simulation(map_spread=(150, 350), map_complexity=5)
 sim.test()
 ```
