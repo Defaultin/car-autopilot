@@ -124,18 +124,10 @@ class Car:
     def _check_collision(self, screen, surface):
         """Checks for collisions and reduces score for collisions with grass and markings"""
         for point in self.collision_points:
-            try:
-                color = screen.get_at(point)
-                if color == surface.grass_color:
-                    self.movement_score -= 10
-                    self._stop()
-                    break
-                elif color == surface.markup_color:
-                    self.movement_score -= 5
-                    break
-            except IndexError:
+            if not self._safe_position(point, screen, surface):
                 self.movement_score -= 10
                 self._stop()
+                break
 
     def _compute_radars(self, screen, surface):
         """Calculates radars and distances from car to surface facilities"""
@@ -148,28 +140,28 @@ class Car:
             for length in range(1, self.max_radar_len + 1):
                 x = int(self.position.x + length * cos(angle))
                 y = int(self.position.y + length * sin(angle))
-                try:
-                    color = screen.get_at((x, y))
-                    if not self._check_color(color, surface):
-                        break
-                except IndexError:
+                if not self._safe_position((x, y), screen, surface):
                     break
 
             self.radars = np.append(self.radars, [(x, y)], axis=0)
             self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
 
+    def _safe_position(self, position, screen, surface, *, limit=60):
+        """Checks that the color on surface matches the colors allowed for safe driving"""
+        try:
+            color = screen.get_at(position)
+            return any([
+                self._compute_distance(color, surface.road_color) < limit,
+                self._compute_distance(color, surface.pointers_color) < limit,
+                self._compute_distance(color, surface.road_pointers_color) < limit
+            ])
+        except IndexError:
+            return False
+
     @staticmethod
     def _compute_distance(*points):
         """Calculates distance between points"""
         return sqrt(sum(map(lambda a, b: (a - b) ** 2, *points)))
-
-    def _check_color(self, color, surface, *, limit=60):
-        """Checks that the surface color matches the colors allowed for driving"""
-        return any([
-            self._compute_distance(color, surface.road_color) < limit,
-            self._compute_distance(color, surface.pointers_color) < limit,
-            self._compute_distance(color, surface.road_pointers_color) < limit
-        ])
 
     def _compute_target_distance(self, surface):
         """Calculates distance ratio depending on the proximity to the target"""
