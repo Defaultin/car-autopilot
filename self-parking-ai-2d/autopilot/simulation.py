@@ -64,10 +64,7 @@ class Simulation:
         for _, gen in genomes:
             gen.fitness = 0
             net = neat.nn.FeedForwardNetwork.create(gen, config)
-            car = Car(
-                spawn_position=self.parking.get_start_position(),
-                spawn_angle=self.parking.get_start_angle()
-            )
+            car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
             self.nets.append(net)
             self.cars.append(car)
 
@@ -157,7 +154,7 @@ class Simulation:
 
     def test(self, genome=None, config_file="autopilot/self-parking.conf"):
         """Tests simulation environment"""
-        car = Car(spawn_position=self.parking.get_start_position(), spawn_angle=self.parking.get_start_angle())
+        car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
         if genome:
             config = neat.config.Config(
                 neat.DefaultGenome,
@@ -178,15 +175,9 @@ class Simulation:
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_g:         # shuffle parked cars
                         self.parking.randomize()
-                        car = Car(
-                            spawn_position=self.parking.get_start_position(),
-                            spawn_angle=self.parking.get_start_angle()
-                        )
+                        car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
                     elif event.key == pg.K_h:       # reset car position
-                        car = Car(
-                            spawn_position=self.parking.get_start_position(),
-                            spawn_angle=self.parking.get_start_angle()
-                        )
+                        car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
                     elif event.key == pg.K_j:       # show collision points
                         car.show_collision_points = False if car.show_collision_points else True
                     elif event.key == pg.K_k:       # show collision radars
