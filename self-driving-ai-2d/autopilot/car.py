@@ -12,7 +12,7 @@ class Car:
 
     def __init__(self, spawn_position=(0.0, 0.0), spawn_angle=0, scale=1,
                  show_collision=False, show_radars=False, show_score=False):
-        sprite = pg.image.load(f"sprites/car{randint(0, 63)}.png")
+        sprite = pg.image.load(f"autopilot/sprites/car{randint(0, 63)}.png")
         rect = sprite.get_rect()
         w, h = round(rect.width * scale), round(rect.height * scale)
         self.car_sprite = pg.transform.scale(sprite, (w, h))

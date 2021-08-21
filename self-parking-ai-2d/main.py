@@ -11,7 +11,7 @@ def main():
 
     # Test simulation environment with autopilot
     # best_genome = sim.load("checkpoints/best.pkl")
-    # sim.test(best_genome, "self-parking.conf")
+    # sim.test(best_genome)
 
     # Test simulation environment without autopilot
     # sim.test()

@@ -3,8 +3,8 @@ import neat
 import pickle
 import numpy as np
 import pygame as pg
-from highway import Highway
-from car import Car
+from autopilot.highway import Highway
+from autopilot.car import Car
 
 __all__ = "Simulation"
 
@@ -133,7 +133,7 @@ class Simulation:
                 pg.display.flip()
                 self.clock.tick(0)
 
-    def train(self, config_file):
+    def train(self, config_file="autopilot/self-driving.conf"):
         """Initializes NEAT from config and starts training process on simulation"""
         config = neat.config.Config(
             neat.DefaultGenome,
@@ -150,10 +150,10 @@ class Simulation:
 
         return population.run(self._run_generation, self.generations)
 
-    def test(self, genome=None, config_file=None):
+    def test(self, genome=None, config_file="autopilot/self-driving.conf"):
         """Tests simulation environment"""
         car = Car(self.highway.start_position, self.highway.start_angle, scale=0.5)
-        if genome and config_file:
+        if genome:
             config = neat.config.Config(
                 neat.DefaultGenome,
                 neat.DefaultReproduction,

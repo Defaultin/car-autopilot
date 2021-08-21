@@ -1,4 +1,4 @@
-from simulation import Simulation
+from autopilot import Simulation
 
 
 def main():
@@ -26,12 +26,12 @@ def main():
     sim = Simulation(epochs=100, map_spread=(150, 350), map_complexity=5, time_per_map=3000)
 
     # Train autopilot on simulation environment
-    best_genome = sim.train("self-driving.conf")
+    best_genome = sim.train()
     sim.save(best_genome)
 
     # Test simulation environment with autopilot
     # best_genome = sim.load("checkpoints/best.pkl")
-    # sim.test(best_genome, "self-driving.conf")
+    # sim.test(best_genome)
 
     # Test simulation environment without autopilot
     # sim.test()

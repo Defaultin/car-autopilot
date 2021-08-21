@@ -16,7 +16,7 @@ class Simulation:
         pg.display.set_caption('Self-parking simulation')
         self.window = 1320, 768
         self.width, self.height = self.window
-        self.screen = pg.display.set_mode(self.window)
+        self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
         self.clock = pg.time.Clock()
 
         self.parking = Parking(spawn_cars=parked_cars)
@@ -152,10 +152,10 @@ class Simulation:
 
         return population.run(self._run_generation, self.generations)
 
-    def test(self, genome=None, config_file=None):
+    def test(self, genome=None, config_file="autopilot/self-parking.conf"):
         """Tests simulation environment"""
         car = Car(spawn_position=(100, 580))
-        if genome and config_file:
+        if genome:
             config = neat.config.Config(
                 neat.DefaultGenome,
                 neat.DefaultReproduction,
