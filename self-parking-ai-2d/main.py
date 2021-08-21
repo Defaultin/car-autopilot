@@ -1,4 +1,4 @@
-from simulation import Simulation
+from autopilot import Simulation
 
 
 def main():
@@ -6,7 +6,7 @@ def main():
     sim = Simulation(epochs=1000, time_per_map=500)
 
     # Train autopilot on simulation environment
-    best_genome = sim.train("self-parking.conf")
+    best_genome = sim.train()
     sim.save(best_genome)
 
     # Test simulation environment with autopilot

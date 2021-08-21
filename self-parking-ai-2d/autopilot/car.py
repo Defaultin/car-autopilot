@@ -11,7 +11,7 @@ class Car:
 
     def __init__(self, spawn_position=(0.0, 0.0), spawn_angle=0, scale=1,
                  show_collision=False, show_radars=False, show_score=False):
-        sprite = pg.image.load(f"sprites/car0.png")
+        sprite = pg.image.load(f"autopilot/sprites/car0.png")
         rect = sprite.get_rect()
         w, h = round(rect.width * scale), round(rect.height * scale)
         self.car_sprite = pg.transform.scale(sprite, (w, h))
@@ -159,22 +159,21 @@ class Car:
             self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
 
     @staticmethod
-    def _color_distance(*colors):
-        """Calculates distance between rgb colors"""
-        return sqrt(sum(map(lambda a, b: (a - b) ** 2, *colors)))
+    def _compute_distance(*points):
+        """Calculates distance between points"""
+        return sqrt(sum(map(lambda a, b: (a - b) ** 2, *points)))
 
     def _check_color(self, color, surface, *, limit=60):
         """Checks that the surface color matches the colors allowed for driving"""
         return any([
-            self._color_distance(color, surface.road_color) < limit,
-            self._color_distance(color, surface.pointers_color) < limit,
-            self._color_distance(color, surface.road_pointers_color) < limit
+            self._compute_distance(color, surface.road_color) < limit,
+            self._compute_distance(color, surface.pointers_color) < limit,
+            self._compute_distance(color, surface.road_pointers_color) < limit
         ])
 
     def _compute_target_distance(self, surface):
         """Calculates distance ratio depending on the proximity to the target"""
-        target_x, target_y = surface.get_target_position()
-        distance = sqrt((self.position.x - target_x) ** 2 + (self.position.y - target_y) ** 2)
+        distance = self._compute_distance(self.position, surface.get_target_position())
         if not self.start_distance:
             self.start_distance = distance
         ratio = -distance / self.start_distance + 1

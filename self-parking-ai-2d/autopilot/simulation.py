@@ -3,8 +3,10 @@ import neat
 import pickle
 import numpy as np
 import pygame as pg
-from car import Car
-from parking import Parking
+from autopilot.car import Car
+from autopilot.parking import Parking
+
+__all__ = "Simulation"
 
 
 class Simulation:
@@ -133,7 +135,7 @@ class Simulation:
                 pg.display.flip()
                 self.clock.tick(0)
 
-    def train(self, config_file):
+    def train(self, config_file="autopilot/self-parking.conf"):
         """Initializes NEAT from config and starts training process on simulation"""
         config = neat.config.Config(
             neat.DefaultGenome,

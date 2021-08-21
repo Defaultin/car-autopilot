@@ -14,7 +14,7 @@ class Parking:
 		else:
 			raise ValueError("There are only 63+1 parking places in the parking lot!")
 
-		self.background = pg.image.load("sprites/parking.png")
+		self.background = pg.image.load("autopilot/sprites/parking.png")
 		self.grass_color = 63, 155, 11, 255
 		self.markup_color = 255, 255, 255, 255
 		self.road_color = 80, 80, 80, 255
@@ -42,7 +42,7 @@ class Parking:
 
 		# init cars sprites
 		for i in range(64):
-			sprite = pg.image.load("sprites/car" + str(i+1) + ".png")
+			sprite = pg.image.load("autopilot/sprites/car" + str(i+1) + ".png")
 			self.cars_sprites.append(sprite)
 
 		# init parked cars and target space
