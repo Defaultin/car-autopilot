@@ -180,27 +180,9 @@ class Car:
             self.parked = True
         self.score = self.distance_score + self.movement_score
 
-    def _compute_target_angle(self, surface): # TODO degug
+    def _compute_target_angle(self, surface): # TODO debug : get direction by target angle
         x, y = surface.target_position
-        x_spot, y_spot = x - self.position.x, -(y - self.position.y)
-        if x_spot > 0 and y_spot > 0:
-            spot_angle = degrees(atan(abs(y_spot / x_spot)))
-        elif x_spot < 0 and y_spot > 0:
-            spot_angle = degrees(atan(abs(y_spot / x_spot))) + 90
-        elif x_spot < 0 and y_spot < 0:
-            spot_angle = degrees(atan(abs(y_spot / x_spot))) + 180
-        elif x_spot > 0 and y_spot < 0:
-            spot_angle = degrees(atan(abs(y_spot / x_spot))) + 270
-        elif y_spot == 0:
-            spot_angle = 0 if x_spot >= 0 else 180
-        else:
-            spot_angle = 90 if y_spot > 0 else 270
-
-        self.target_angle = spot_angle - 90 - self.angle % 360
-        if -360 <= self.target_angle < -180:
-            self.target_angle += 360
-        elif 180 < self.target_angle <= 360:
-            self.target_angle -= 360
+        alpha = degrees(atan(degrees((self.position.y - y) / (self.position.x - x)))) + self.angle % 360 - 90
 
     def move(self, movement, dt, screen, surface):
         """Moves a car model according to the kinematics laws and the input direction"""
@@ -211,6 +193,8 @@ class Car:
             self._compute_radars(screen, surface)
             self._compute_target_distance(surface)
             self._compute_score()
+
+            self._compute_target_angle(surface)
 
     def draw(self, screen):
         """Renders a car model with radars and collision points"""
