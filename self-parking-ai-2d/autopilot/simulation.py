@@ -48,11 +48,11 @@ class Simulation:
             ]
 
         label_color = 75, 0, 130
-        font = pg.font.SysFont("Comic Sans MS", 20)
+        font = pg.font.SysFont("Comic Sans MS", 15)
         for i, text in enumerate(texts[::-1]):
             label = font.render(text, True, label_color)
             label_rect = label.get_rect()
-            label_rect.center = (120, self.height - 15 - 20 * i)
+            label_rect.center = (1260, self.height - 25 - 15 * i)
             self.screen.blit(label, label_rect)
 
     def _init_new_generation(self, genomes, config):
@@ -64,7 +64,7 @@ class Simulation:
         for _, gen in genomes:
             gen.fitness = 0
             net = neat.nn.FeedForwardNetwork.create(gen, config)
-            car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
+            car = Car(self.parking.start_position, self.parking.start_angle)
             self.nets.append(net)
             self.cars.append(car)
 
@@ -154,7 +154,7 @@ class Simulation:
 
     def test(self, genome=None, config_file="autopilot/self-parking.conf"):
         """Tests simulation environment"""
-        car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
+        car = Car(self.parking.start_position, self.parking.start_angle)
         if genome:
             config = neat.config.Config(
                 neat.DefaultGenome,
@@ -175,9 +175,9 @@ class Simulation:
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_g:         # shuffle parked cars
                         self.parking.randomize()
-                        car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
+                        car = Car(self.parking.start_position, self.parking.start_angle)
                     elif event.key == pg.K_h:       # reset car position
-                        car = Car(self.parking.get_start_position(), self.parking.get_start_angle())
+                        car = Car(self.parking.start_position, self.parking.start_angle)
                     elif event.key == pg.K_j:       # show collision points
                         car.show_collision_points = False if car.show_collision_points else True
                     elif event.key == pg.K_k:       # show collision radars

@@ -1,7 +1,7 @@
 import pygame as pg
 import numpy as np
 from pygame.math import Vector2
-from math import sqrt, sin, cos, radians, degrees, copysign
+from math import sqrt, sin, cos, radians, degrees, copysign, atan
 
 __all__ = "Car"
 
@@ -134,15 +134,16 @@ class Car:
         car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(8)])
         self.radars = np.empty((0, 2), np.int_)
         self.radars_data = np.empty(0, np.int_)
+        length, x, y = 0, 0, 0
 
         for angle in car_angles:
             for length in range(1, self.max_radar_len + 1):
                 x = int(self.position.x + length * cos(angle))
                 y = int(self.position.y + length * sin(angle))
                 if not self._safe_position((x, y), screen, surface):
-                    self.radars = np.append(self.radars, [(x, y)], axis=0)
-                    self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
                     break
+            self.radars = np.append(self.radars, [(x, y)], axis=0)
+            self.radars_data = np.append(self.radars_data, length / self.max_radar_len)
 
     def _safe_position(self, position, screen, surface, *, limit=60):
         """Checks that the color on surface matches the colors allowed for safe driving"""
@@ -163,7 +164,7 @@ class Car:
 
     def _compute_target_distance(self, surface):
         """Calculates distance ratio depending on the proximity to the target"""
-        distance = self._compute_distance(self.position, surface.get_target_position())
+        distance = self._compute_distance(self.position, surface.target_position)
         if not self.start_distance:
             self.start_distance = distance
         ratio = -distance / self.start_distance + 1
@@ -178,6 +179,28 @@ class Car:
             self._stop()
             self.parked = True
         self.score = self.distance_score + self.movement_score
+
+    def _compute_target_angle(self, surface): # TODO degug
+        x, y = surface.target_position
+        x_spot, y_spot = x - self.position.x, -(y - self.position.y)
+        if x_spot > 0 and y_spot > 0:
+            spot_angle = degrees(atan(abs(y_spot / x_spot)))
+        elif x_spot < 0 and y_spot > 0:
+            spot_angle = degrees(atan(abs(y_spot / x_spot))) + 90
+        elif x_spot < 0 and y_spot < 0:
+            spot_angle = degrees(atan(abs(y_spot / x_spot))) + 180
+        elif x_spot > 0 and y_spot < 0:
+            spot_angle = degrees(atan(abs(y_spot / x_spot))) + 270
+        elif y_spot == 0:
+            spot_angle = 0 if x_spot >= 0 else 180
+        else:
+            spot_angle = 90 if y_spot > 0 else 270
+
+        self.target_angle = spot_angle - 90 - self.angle % 360
+        if -360 <= self.target_angle < -180:
+            self.target_angle += 360
+        elif 180 < self.target_angle <= 360:
+            self.target_angle -= 360
 
     def move(self, movement, dt, screen, surface):
         """Moves a car model according to the kinematics laws and the input direction"""
