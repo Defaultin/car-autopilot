@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 import pygame as pg
 from autopilot.car import Car
-from autopilot.parking import Parking
+from autopilot.parking import SmallParking, LargeParking
 
 __all__ = "Simulation"
 
@@ -19,7 +19,7 @@ class Simulation:
         self.screen = pg.display.set_mode(self.window)
         self.clock = pg.time.Clock()
 
-        self.parking = Parking(spawn_cars=parked_cars)
+        self.parking = SmallParking(spawn_cars=parked_cars)
         self.best_score = -float("inf")
         self.time_per_map = time_per_map
         self.generations = epochs
@@ -35,8 +35,8 @@ class Simulation:
                 f"Speed: {round(car.velocity.x, 2)}",
                 f"Boost: {round(car.acceleration, 2)}",
                 f"Rudder: {round(car.steering, 2)}",
-                f"Score D: {round(car.distance_score, 2)}",
-                f"Score M: {round(car.movement_score, 2)}"
+                f"Navi: {round(car.movement_score, 2)}",
+                f"Score: {round(car.score, 2)}"
             ]
         else:
             texts = [

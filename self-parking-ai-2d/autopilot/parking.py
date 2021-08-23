@@ -1,11 +1,10 @@
 import pygame as pg
-from math import atan, degrees
 from random import randint, shuffle
 
-__all__ = "Parking", "ParkingLot"
+__all__ = "SmallParking", "LargeParking"
 
 
-class Parking:
+class SmallParking:
 	"""Small parking lot with parking places and parked cars"""
 	CAPACITY = 54
 
@@ -17,7 +16,7 @@ class Parking:
 		else:
 			raise ValueError(f"There are only {self.CAPACITY-1}+1 parking places in the parking lot!")
 
-		self.background = pg.image.load("autopilot/sprites/parking.png")
+		self.background = pg.image.load("autopilot/sprites/small-parking.png")
 		self.grass_color = 63, 155, 11, 255
 		self.markup_color = 255, 255, 255, 255
 		self.road_color = 80, 80, 80, 255
@@ -88,7 +87,7 @@ class Parking:
 			screen.blit(car, self.get_center(pos, car))
 
 
-class ParkingLot:
+class LargeParking:
 	"""Large parking lot with parking places and parked cars"""
 	CAPACITY = 64
 
@@ -100,7 +99,7 @@ class ParkingLot:
 		else:
 			raise ValueError(f"There are only {self.CAPACITY - 1}+1 parking places in the parking lot!")
 
-		self.background = pg.image.load("autopilot/sprites/parking-lot.png")
+		self.background = pg.image.load("autopilot/sprites/large-parking.png")
 		self.grass_color = 63, 155, 11, 255
 		self.markup_color = 255, 255, 255, 255
 		self.road_color = 80, 80, 80, 255

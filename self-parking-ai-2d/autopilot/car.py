@@ -1,7 +1,7 @@
 import pygame as pg
 import numpy as np
 from pygame.math import Vector2
-from math import sqrt, sin, cos, radians, degrees, copysign, atan
+from math import sqrt, sin, cos, atan2, radians, degrees, copysign
 
 __all__ = "Car"
 
@@ -180,9 +180,36 @@ class Car:
             self.parked = True
         self.score = self.distance_score + self.movement_score
 
-    def _compute_target_angle(self, surface): # TODO debug : get direction by target angle
-        x, y = surface.target_position
-        alpha = degrees(atan(degrees((self.position.y - y) / (self.position.x - x)))) + self.angle % 360 - 90
+    def _navigate_target(self, surface):
+        """Calculates the navigation movement towards the target parking spot"""
+        spot_x, spot_y = surface.target_position
+        spot_vector = self.position.x - spot_x, self.position.y - spot_y
+
+        bumper_x = self.collision_points[:2, 0].mean()
+        bumper_y = self.collision_points[:2, 1].mean()
+        car_vector = self.position.x - bumper_x, self.position.y - bumper_y
+
+        dot = spot_vector[0] * car_vector[0] + spot_vector[1] * car_vector[1]
+        det = spot_vector[0] * car_vector[1] - spot_vector[1] * car_vector[0]
+        angle = degrees(atan2(det, dot))  # [-180; 180]
+
+        if -22.5 <= angle <= 22.5:
+            movement_params = {"direction": "forward", "rotation": "neutral"}
+        elif 22.5 <= angle <= 67.5:
+            movement_params = {"direction": "forward", "rotation": "right"}
+        elif -67.5 <= angle <= -22.5:
+            movement_params = {"direction": "forward", "rotation": "left"}
+        elif 67.5 <= angle <= 112.5:
+            movement_params = {"direction": "neutral", "rotation": "right"}
+        elif -112.5 <= angle <= -67.5:
+            movement_params = {"direction": "neutral", "rotation": "left"}
+        elif 112.5 <= angle <= 157.5:
+            movement_params = {"direction": "backward", "rotation": "right"}
+        elif -157.5 <= angle <= -112.5:
+            movement_params = {"direction": "backward", "rotation": "left"}
+        else:
+            movement_params = {"direction": "backward", "rotation": "neutral"}
+        print(movement_params)
 
     def move(self, movement, dt, screen, surface):
         """Moves a car model according to the kinematics laws and the input direction"""
@@ -192,9 +219,8 @@ class Car:
             self._check_collision(screen, surface)
             self._compute_radars(screen, surface)
             self._compute_target_distance(surface)
+            self._navigate_target(surface)
             self._compute_score()
-
-            self._compute_target_angle(surface)
 
     def draw(self, screen):
         """Renders a car model with radars and collision points"""
