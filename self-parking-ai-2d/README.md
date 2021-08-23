@@ -20,7 +20,8 @@ https://user-images.githubusercontent.com/50778301/130321849-b9b6d05a-c57d-493a-
 
 Cars are randomly placed on the parking lot and a target spot for subsequent parking is selected.
 
-![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/autopilot/sprites/small-parking.png "Small parking") ![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/autopilot/sprites/large-parking.png "Large parking")
+![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/autopilot/sprites/small-parking.png "Small parking")
+![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/autopilot/sprites/large-parking.png "Large parking")
 
 ---
 
