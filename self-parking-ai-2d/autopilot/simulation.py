@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 import pygame as pg
 from autopilot.car import Car
-from autopilot.parking import SmallParking, LargeParking
+from autopilot.parking import SmallParking
 
 __all__ = "Simulation"
 
@@ -16,7 +16,7 @@ class Simulation:
         pg.display.set_caption('Self-parking simulation')
         self.window = 1320, 768
         self.width, self.height = self.window
-        self.screen = pg.display.set_mode(self.window)
+        self.screen = pg.display.set_mode(self.window, pg.FULLSCREEN)
         self.clock = pg.time.Clock()
 
         self.parking = SmallParking(spawn_cars=parked_cars)
@@ -35,8 +35,8 @@ class Simulation:
                 f"Speed: {round(car.velocity.x, 2)}",
                 f"Boost: {round(car.acceleration, 2)}",
                 f"Rudder: {round(car.steering, 2)}",
-                f"Navi: {round(car.movement_score, 2)}",
-                f"Score: {round(car.score, 2)}"
+                f"Score M: {round(car.movement_score, 2)}",
+                f"Score D: {round(car.distance_score, 2)}"
             ]
         else:
             texts = [
@@ -101,11 +101,11 @@ class Simulation:
             self.cars_left = 0
             for net, car, gen in zip(self.nets, self.cars, genomes):
                 # get movement params from network
-                output = net.activate(np.append(car.radars_data, car.target_distance))
+                inputs = np.concatenate((car.radars_data, car.navigation))
+                outputs = net.activate(inputs)
 
                 # movement params mapping
-                # direction, rotation = divmod(output.index(max(output)), 3)
-                direction, rotation = [0 if -0.33 < out < 0.33 else np.sign(out) for out in output]
+                direction, rotation = [0 if -0.33 < out < 0.33 else np.sign(out) for out in outputs]
                 movement_params = {"direction": direction, "rotation": rotation}
 
                 # move a car

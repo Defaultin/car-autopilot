@@ -38,11 +38,11 @@ Cars are randomly placed on the parking lot and a target spot for subsequent par
 ## Simulation
 
 * Population of models is initialized and evolves according to the specified [configurations](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/autopilot/self-parking.conf).
-* Normalized distances to obstacles from each radar and current distance to target parking spot are fed to the neural network inputs.
+* Normalized distances to obstacles from each radar, navigation movements and current distance to target parking spot are fed to the neural network inputs.
 * Outputs of the neural network are the direction and rotation parameters of the car.
 * Each model of a generation is rewarded for the closest distance to the target parking spot and penalized for colliding with obstacles, crossing road markings and idle time.
 
-![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/demo/neat-model.png "NEAT model")
+![](https://github.com/Defaultin/car-autopilot/blob/master/self-parking-ai-2d/demo/neat-model-new.png "NEAT model")
 
 ---
 

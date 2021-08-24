@@ -36,7 +36,8 @@ class Car:
         self.is_alive = True
         self.parked = False
         self.scale = scale
-        self.radars_data = np.zeros(8, np.int_)
+        self.radars_data = np.zeros(8, np.single)
+        self.navigation = np.zeros(5, np.single)
 
         self.target_distance = 0
         self.start_distance = 0
@@ -133,7 +134,7 @@ class Car:
         """Calculates radars and distances from car to surface facilities"""
         car_angles = np.array([radians(90 - self.angle - 45 * angle) for angle in range(8)])
         self.radars = np.empty((0, 2), np.int_)
-        self.radars_data = np.empty(0, np.int_)
+        self.radars_data = np.empty(0, np.single)
         length, x, y = 0, 0, 0
 
         for angle in car_angles:
@@ -193,23 +194,19 @@ class Car:
         det = spot_vector[0] * car_vector[1] - spot_vector[1] * car_vector[0]
         angle = degrees(atan2(det, dot))  # [-180; 180]
 
-        if -22.5 <= angle <= 22.5:
-            movement_params = {"direction": "forward", "rotation": "neutral"}
-        elif 22.5 <= angle <= 67.5:
-            movement_params = {"direction": "forward", "rotation": "right"}
-        elif -67.5 <= angle <= -22.5:
-            movement_params = {"direction": "forward", "rotation": "left"}
-        elif 67.5 <= angle <= 112.5:
-            movement_params = {"direction": "neutral", "rotation": "right"}
-        elif -112.5 <= angle <= -67.5:
-            movement_params = {"direction": "neutral", "rotation": "left"}
-        elif 112.5 <= angle <= 157.5:
-            movement_params = {"direction": "backward", "rotation": "right"}
-        elif -157.5 <= angle <= -112.5:
-            movement_params = {"direction": "backward", "rotation": "left"}
+        if -90 <= angle <= 90:
+            forward, backward = 1.0, 0.0
         else:
-            movement_params = {"direction": "backward", "rotation": "neutral"}
-        print(movement_params)
+            forward, backward = 0.0, 1.0
+
+        if angle > 0:
+            left, right = 1 - abs(angle - 90) / 90, 0.0
+        elif angle < 0:
+            left, right = 0.0, 1 - abs(angle + 90) / 90
+        else:
+            left, right = 0.0, 0.0
+
+        self.navigation = np.array([forward, backward, right, left, self.target_distance])
 
     def move(self, movement, dt, screen, surface):
         """Moves a car model according to the kinematics laws and the input direction"""
