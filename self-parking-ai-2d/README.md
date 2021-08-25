@@ -79,7 +79,7 @@ sim.test()
 ## Dependencies
 
 ```bash
-$ pip3 install -r self-driving-ai-2d/requirements.txt
+$ pip3 install -r self-parking-ai-2d/requirements.txt
 ```
 
 * neat-python
