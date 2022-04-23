@@ -2,7 +2,6 @@ from autopilot import Simulation
 
 
 def main():
-    """"""
     sim = Simulation(epochs=1000, time_per_map=200)
 
     # Train autopilot on simulation environment
