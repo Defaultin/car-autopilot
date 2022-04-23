@@ -42,4 +42,6 @@ model.add(core.Dense(1))
 
 ## Autopilot Demo
 
-https://github.com/Defaultin/car-autopilot/blob/master/behavioral-cloning-3d/demo/demo.mp4
+<p align="center">
+  <img src="demo/demo.mp4" alt="Autopilot Demo"/>
+</p>
