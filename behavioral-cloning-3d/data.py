@@ -1,8 +1,8 @@
+import os
 import numpy as np
 import skimage.transform as sktransform
 import random
 import matplotlib.image as mpimg
-import os
 
 
 cameras = ["left", "center", "right"]
