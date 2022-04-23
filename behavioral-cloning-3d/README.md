@@ -7,7 +7,7 @@ Autopilot deep learning model trained based on behavioral cloning metodology usi
 ## Project structure
 
 | File           | Description                                                                                                                    |
-| :------------: | :----------------------------------------------------------------------------------------------------------------------------: |
+| :------------: | ------------------------------------------------------------------------------------------------------------------------------ |
 | `data.py`      | Methods related to data augmentation, preprocessing and batching                                                               |
 | `model.py`     | Implements model architecture and runs the training pipeline                                                                   |
 | `model.json`   | JSON file containing model architecture                                                                                        |
