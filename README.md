@@ -12,4 +12,4 @@ Training an autopilot model using genetic algorithm for the generation of evolvi
 
 ## [#3](https://github.com/Defaultin/car-autopilot/tree/master/behavioral-cloning-3d) - Self-driving 3D
 
-Training an autopilot deep learning model based on behavioral cloning metodology using Udacity's self driving car [simulator](https://github.com/udacity/self-driving-car-sim)
+Training an autopilot deep learning model based on behavioral cloning metodology using Udacity's self driving car 3D [simulator](https://github.com/udacity/self-driving-car-sim).
