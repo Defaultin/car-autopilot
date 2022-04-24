@@ -10,8 +10,9 @@ cameras_steering_correction = [.25, 0., -.25]
 
 
 def preprocess(image, top_offset=.375, bottom_offset=.125):
-    top = int(top_offset * image.shape[0])
-    bottom = int(bottom_offset * image.shape[0])
+    length = image.shape[0]
+    top = int(top_offset * length)
+    bottom = int(bottom_offset * length)
     image = sktransform.resize(image[top:-bottom, :], (32, 128, 3))
     return image
 
@@ -31,11 +32,11 @@ def generate_samples(data, root_path, augment=True, batch_size=128):
 
                 if augment:
                     h, w = image.shape[0], image.shape[1]
-                    [x1, x2] = np.random.choice(w, 2, replace=False)
+                    x1, x2 = np.random.choice(w, 2, replace=False)
                     k = h / (x2 - x1)
-                    b = - k * x1
+                    b = -k * x1
                     for i in range(h):
-                        c = int((i - b) / k)
+                        c = (i - b) // k
                         image[i, :c, :] = (image[i, :c, :] * .5).astype(np.int32)
 
                 v_delta = .05 if augment else 0
@@ -48,7 +49,7 @@ def generate_samples(data, root_path, augment=True, batch_size=128):
                 x = np.append(x, [image], axis=0)
                 y = np.append(y, [angle])
 
-            flip_indices = random.sample(range(x.shape[0]), int(x.shape[0] / 2))
+            flip_indices = random.sample(range(x.shape[0]), x.shape[0] // 2)
             x[flip_indices] = x[flip_indices, :, ::-1, :]
             y[flip_indices] = -y[flip_indices]
             yield x, y
