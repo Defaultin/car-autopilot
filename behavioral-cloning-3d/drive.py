@@ -48,6 +48,7 @@ def send_control(steering_angle, throttle):
 def main():
     model_file = "model.json"
     weights_file = model_file.replace("json", "h5")
+
     with open(model_file, "r") as jfile:
         model = model_from_json(jfile.read())
         model.compile("adam", "mse")
