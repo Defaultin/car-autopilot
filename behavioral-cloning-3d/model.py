@@ -6,7 +6,7 @@ from keras.callbacks import Callback
 from keras import models, optimizers, backend
 from keras.layers import core, convolutional, pooling
 from sklearn import model_selection
-from data import generate_samples, preprocess
+from data import generate_samples
 from weights_logger_callback import WeightsLogger
 
 
